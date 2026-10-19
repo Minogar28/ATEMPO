@@ -8,6 +8,7 @@ import {
   saveFotoPerfil,
   saveLogoEmpresa,
 } from '@src/services/perfil.service'
+import { signosPropios } from '@src/services/signos.service'
 import type { Consentimiento, FichaItem } from '../types'
 
 export const useCuenta = () => {
@@ -68,11 +69,15 @@ export const useCuenta = () => {
     { label: 'Rol', valor: user?.roles.join(', ') ?? '—' },
   ]
 
+  // Mismos signos que ve la CAREband y el psicólogo en Mi Panel.
+  const [signos] = useState(signosPropios)
   const fisiologica: FichaItem[] = [
-    { label: 'FC en reposo', valor: '72 bpm' },
-    { label: 'HRV habitual', valor: '58 ms' },
-    { label: 'Temperatura basal', valor: '36.4 °C' },
-    { label: 'SpO₂ habitual', valor: '98 %' },
+    { label: 'Frecuencia cardíaca', valor: signos ? `${signos.frecuenciaCardiaca} bpm` : '—' },
+    { label: 'Presión arterial', valor: signos ? `${signos.presionSistolica}/${signos.presionDiastolica} mmHg` : '—' },
+    { label: 'Oxígeno en sangre', valor: signos ? `${signos.oxigenoSangre} %` : '—' },
+    { label: 'Sueño', valor: signos ? `${signos.tipoSueno} · ${signos.horasSueno} h` : '—' },
+    { label: 'Calorías de hoy', valor: signos ? `${signos.caloriasDia.toLocaleString('es')} kcal` : '—' },
+    { label: 'Pasos de hoy', valor: signos ? signos.pasosDia.toLocaleString('es') : '—' },
   ]
 
   const [consentimientos, setConsentimientos] = useState<Consentimiento[]>(() =>

@@ -7,21 +7,18 @@ import {
   listCitas,
 } from '@src/services/citas.service'
 import type { Cita } from '@src/services/citas.service'
-import type { Psicologo } from '../types'
+import { deleteBloque, etiquetaBloque, listBloques } from '@src/services/disponibilidad.service'
+import { listRegistros } from '@src/services/gestion.service'
+import type { Psicologo, SlotDisponible } from '../types'
 
-const psicologos: Psicologo[] = [
-  { id: 1, nombre: 'Dra. Camila Torres', especialidad: 'Ansiedad y estrés laboral', rating: 4.9, disponibles: ['09:00', '10:30', '14:00', '16:30'] },
-  { id: 2, nombre: 'Dr. Andrés Mejía', especialidad: 'Terapia cognitivo-conductual', rating: 4.8, disponibles: ['08:00', '11:00', '15:30'] },
-  { id: 3, nombre: 'Dra. Laura Gómez', especialidad: 'Mindfulness clínico', rating: 4.7, disponibles: ['10:00', '13:00', '17:00'] },
-]
-
-// Las citas persisten en localStorage (services/citas.service.ts): reservar
-// crea la cita con su sala de Meet simulada, "entrar" abre la sesión virtual y
-// completarla alimenta el estado del avatar.
+// Los horarios que el paciente puede reservar son los bloques de
+// disponibilidad reales que el psicólogo abrió en su calendario
+// (atempo.gestion.disponibilidad) — reservar consume el bloque.
 export const useAgenda = () => {
   const [citas, setCitas] = useState<Cita[]>(listCitas)
+  const [bloques, setBloques] = useState(listBloques)
   const [seleccionado, setSeleccionado] = useState<Psicologo | null>(null)
-  const [slot, setSlot] = useState('')
+  const [slot, setSlot] = useState<SlotDisponible | null>(null)
   const [sesion, setSesion] = useState<Cita | null>(null)
   const [search, setSearch] = useState('')
 
@@ -30,10 +27,26 @@ export const useAgenda = () => {
     ? citas.filter((c) => `${c.psicologo} ${c.estado} ${c.fecha}`.toLowerCase().includes(term))
     : citas
 
-  // Seleccionar horario dentro de la tarjeta de cada psicólogo.
-  const seleccionar = (p: Psicologo, hora: string) => {
+  // Psicólogos del registro de Gestión; bloques sin dueño (legacy) se
+  // asignan al primero para que sigan siendo reservables.
+  const registros = listRegistros('psicologos')
+  const psicologos: Psicologo[] = registros.map((r) => {
+    const nombre = r.values.nombre
+    return {
+      id: r.id,
+      nombre,
+      especialidad: r.values.especialidad ?? 'Psicología clínica',
+      rating: 4.8,
+      slots: bloques
+        .filter((b) => (b.psicologo ?? registros[0]?.values.nombre) === nombre)
+        .filter((b) => new Date(b.end).getTime() > Date.now())
+        .map((b) => ({ bloqueId: b.id, ...etiquetaBloque(b) })),
+    }
+  })
+
+  const seleccionar = (p: Psicologo, s: SlotDisponible) => {
     setSeleccionado(p)
-    setSlot(hora)
+    setSlot(s)
   }
 
   const reservar = () => {
@@ -41,20 +54,23 @@ export const useAgenda = () => {
     const cita = createCita({
       psicologoId: seleccionado.id,
       psicologo: seleccionado.nombre,
-      fecha: 'Próx. disponible',
-      hora: slot,
+      fecha: slot.fecha,
+      hora: slot.hora,
       modalidad: 'virtual',
     })
+    // El bloque queda ocupado: desaparece de la disponibilidad.
+    deleteBloque(slot.bloqueId)
+    setBloques(listBloques())
     setCitas(listCitas())
     void swalFire({
       icon: 'success',
       title: 'Cita confirmada',
-      text: `${cita.psicologo} · ${cita.hora} — sala de Meet creada`,
+      text: `${cita.psicologo} · ${cita.fecha} ${cita.hora} — sala de Meet creada`,
       timer: 2200,
       showConfirmButton: false,
     })
     setSeleccionado(null)
-    setSlot('')
+    setSlot(null)
   }
 
   const entrar = (cita: Cita) => setSesion(cita)

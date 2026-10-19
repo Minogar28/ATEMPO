@@ -1,7 +1,7 @@
 import { Box, Grid, LinearProgress, Paper, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { CheckCircleRounded, EmojiEventsRounded, LockRounded, WbSunnyRounded, CloudRounded, ThunderstormRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel } from '@src/components'
 import { avatarGlowSx, progressBarSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { useAvatar } from './hooks/useAvatar'
@@ -16,12 +16,7 @@ const AvatarPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Avatar" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Tu avatar</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Refleja tu estado según tus evaluaciones y registros.
-        </Typography>
-      </Box>
+      <PageHeader title="Tu avatar" subtitle="Refleja tu estado según tus evaluaciones y registros." />
 
       {/* Avatar climático + XP */}
       <Paper sx={{ p: 3 }}>

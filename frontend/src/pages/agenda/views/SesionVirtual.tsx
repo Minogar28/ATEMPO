@@ -12,6 +12,7 @@ import {
 import { glassStrongSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { useAuth } from '@src/states/AuthContext'
+import { PageHeader } from '@src/components'
 import ChatArea from '@src/components/Chat/ChatArea'
 import type { Cita } from '../types'
 
@@ -56,12 +57,7 @@ const SesionVirtual = ({ cita, onFinalizar }: { cita: Cita; onFinalizar: () => v
 
   return (
     <Stack spacing={2}>
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Sesión en curso</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {cita.psicologo} · Videollamada segura
-        </Typography>
-      </Box>
+      <PageHeader title="Sesión en curso" subtitle={`${cita.psicologo} · Videollamada segura`} />
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: 'stretch' }}>
       <Paper sx={{ overflow: 'hidden', p: 0, flex: 1, minWidth: 0 }}>

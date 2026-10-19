@@ -1,8 +1,8 @@
-import { Box, Stack, Typography } from '@mui/material'
-import { PageMetaData } from '@src/components'
+import { Stack } from '@mui/material'
+import { PageHeader, PageMetaData } from '@src/components'
 import { usePermissions } from '@src/hooks/usePermissions'
 import { riseInSx } from '@src/theme/brand'
-import { displayFont } from '@src/theme/typography'
+
 import AgendaConsulta from './views/AgendaConsulta'
 import AgendaPaciente from './views/AgendaPaciente'
 
@@ -14,12 +14,10 @@ const AgendaPage = () => {
   return (
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Citas" />
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Citas</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {esPaciente ? 'Reserva con tu psicólogo y revisa tus próximas sesiones.' : 'Agenda consolidada de las citas.'}
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Citas"
+        subtitle={esPaciente ? 'Reserva con tu psicólogo y revisa tus próximas sesiones.' : 'Agenda consolidada de las citas.'}
+      />
       {esPaciente ? <AgendaPaciente /> : <AgendaConsulta />}
     </Stack>
   )

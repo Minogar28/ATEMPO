@@ -11,19 +11,24 @@ import {
   IconButton,
   MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
   Tooltip,
   Typography,
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { AddRounded, DeleteRounded, EditRounded, FormatListNumberedRounded, PlayArrowRounded, SearchRounded, VisibilityRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, SegmentedTabs, StressBar, VideoPlayerDialog } from '@src/components'
+import { AddRounded, DeleteRounded, EditRounded, EventBusyRounded, FormatListNumberedRounded, GroupsRounded, PlayArrowRounded, SearchRounded, TipsAndUpdatesRounded, VideocamRounded, VisibilityRounded } from '@mui/icons-material'
+import { EmptyState, PageHeader, PageMetaData, SectionLabel, SegmentedTabs, StatCard, StressBar, VideoPlayerDialog } from '@src/components'
 import { glassSx, riseInSx } from '@src/theme/brand'
-import { displayFont, monoFont } from '@src/theme/typography'
+import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
+import { signosDe } from '@src/services/signos.service'
+import { TIP_CONTEXTOS } from '@src/services/tips.service'
+import type { TipContexto } from '@src/services/tips.service'
 import { CATEGORIAS_GUIA, youtubeThumb } from '@src/services/guias.service'
 import AgendaCalendario from '@src/components/Calendar'
+import SesionVirtual from '@src/pages/agenda/views/SesionVirtual'
 import { useMiPanel } from './hooks/useMiPanel'
 
 const ESTADO_COLOR: Record<string, string> = {
@@ -41,30 +46,27 @@ const MiPanelPage = () => {
     search, setSearch,
     guias, guiaModal, setGuiaModal, openGuiaModal,
     guiaForm, setGuiaField, videoId, guiaValid, guardarGuia, eliminarGuia,
-    tipoGuia, setTipoGuia, editingGuiaId, previewGuia, setPreviewGuia,
+    tipoGuia, editingGuiaId, previewGuia, setPreviewGuia,
     guiasBib, openBibModal, eliminarGuiaBib, editingBibId, previewBib, setPreviewBib,
+    tips, tipModal, setTipModal, tipForm, setTipForm,
+    openTipModal, guardarTip, eliminarTip, tipValid, editingTipId,
     pacienteView, setPacienteView,
+    sesion, iniciarCita, finalizarSesion, verDetalleCita,
   } = useMiPanel()
+
+  if (sesion) return <SesionVirtual cita={sesion} onFinalizar={finalizarSesion} />
 
   return (
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Mi Panel" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Mi Panel</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Tu agenda, citas y pacientes en un solo lugar.
-        </Typography>
-      </Box>
+      <PageHeader title="Mi Panel" subtitle="Tu agenda, citas y pacientes en un solo lugar." />
 
       <Grid container spacing={2}>
         {stats.map((s) => (
           <Grid key={s.label} size={{ xs: 6, md: 3 }}>
-            <Paper sx={{ px: 2.5, py: 2 }}>
-              <Typography sx={{ fontFamily: monoFont, fontSize: '1.5rem' }}>{s.value}</Typography>
-              <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                {s.label}
-              </Typography>
+            <Paper sx={{ p: 1.25 }}>
+              <StatCard value={s.value} label={s.label} tooltip={s.tip} />
             </Paper>
           </Grid>
         ))}
@@ -76,12 +78,13 @@ const MiPanelPage = () => {
           { id: 'citas', label: 'Citas' },
           { id: 'pacientes', label: 'Pacientes' },
           { id: 'guias', label: 'Guías' },
+          { id: 'tips', label: 'Tips' },
         ]}
         value={tab}
         onChange={(id) => { setTab(id); setSearch('') }}
       />
 
-      {(tab === 'citas' || tab === 'pacientes' || tab === 'guias') && (
+      {(tab === 'citas' || tab === 'pacientes' || tab === 'guias' || tab === 'tips') && (
         <TextField
           size="small"
           value={search}
@@ -133,9 +136,30 @@ const MiPanelPage = () => {
                       height: 22,
                     }}
                   />
+                  <Stack direction="row" spacing={0.25} sx={{ flexShrink: 0 }}>
+                    <Tooltip title="Ver detalle del paciente">
+                      <IconButton size="small" onClick={() => verDetalleCita(c)} aria-label={`Ver detalle de ${c.paciente}`}>
+                        <VisibilityRounded sx={{ fontSize: 16, color: 'text.secondary' }} />
+                      </IconButton>
+                    </Tooltip>
+                    {c.estado !== 'completada' && c.estado !== 'cancelada' && (
+                      <Tooltip title="Iniciar videollamada">
+                        <IconButton size="small" onClick={() => iniciarCita(c)} aria-label={`Iniciar cita con ${c.paciente}`}>
+                          <VideocamRounded sx={{ fontSize: 17, color: 'primary.main' }} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Stack>
                 </Stack>
               </Box>
             ))}
+            {citasHoy.length === 0 && (
+              <EmptyState
+                icon={EventBusyRounded}
+                title="Sin citas para hoy"
+                description="Abre bloques en Mi agenda para que los pacientes reserven."
+              />
+            )}
           </Stack>
         </Paper>
       )}
@@ -168,27 +192,37 @@ const MiPanelPage = () => {
                 </Stack>
               </Box>
             ))}
+            {pacientes.length === 0 && (
+              <EmptyState
+                icon={GroupsRounded}
+                title="Sin pacientes asignados"
+                description="Cuando te asignen pacientes aparecerán aquí con su nivel de estrés."
+              />
+            )}
           </Stack>
         </Paper>
       )}
 
       {tab === 'guias' && (
+        <>
         <Paper sx={{ p: 2.5 }}>
           <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
             <SectionLabel>Biblioteca de videos para pacientes · {guias.length}</SectionLabel>
-            <Stack direction="row" spacing={1}>
-              <Button size="small" variant="outlined" startIcon={<FormatListNumberedRounded />} onClick={() => openBibModal()}>
-                Guía paso a paso
-              </Button>
-              <Button size="small" variant="contained" startIcon={<AddRounded />} onClick={() => openGuiaModal()}>
-                Nueva guía
-              </Button>
-            </Stack>
+            <Button size="small" variant="contained" startIcon={<PlayArrowRounded />} onClick={() => openGuiaModal()}>
+              Nuevo video
+            </Button>
           </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.78rem', mb: 1.5 }}>
+            Enlaces de YouTube que el paciente reproduce dentro de Autorregulación.
+          </Typography>
           {guias.length === 0 ? (
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
-              Aún no publicas guías. Pega un enlace de YouTube para crear la primera.
-            </Typography>
+            <EmptyState
+              icon={PlayArrowRounded}
+              title="Aún no publicas videos"
+              description="Pega un enlace de YouTube para crear la primera guía en video."
+              actionLabel="Nuevo video"
+              onAction={() => openGuiaModal()}
+            />
           ) : (
             <Grid container spacing={2}>
               {guias.map((g) => (
@@ -259,9 +293,20 @@ const MiPanelPage = () => {
             </Grid>
           )}
 
-          {/* Guías paso a paso — las que ve el paciente en la biblioteca */}
-          <Box sx={{ mt: 3 }}>
+        </Paper>
+
+        {/* Guías paso a paso — sección independiente con su propio formulario */}
+        <Paper sx={{ p: 2.5 }}>
+          <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
             <SectionLabel>Guías paso a paso · {guiasBib.length}</SectionLabel>
+            <Button size="small" variant="contained" startIcon={<FormatListNumberedRounded />} onClick={() => openBibModal()}>
+              Nueva guía
+            </Button>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.78rem', mb: 1.5 }}>
+            Instrucciones escritas por pasos que el paciente sigue en Autorregulación.
+          </Typography>
+          <Box>
             <Stack spacing={1.25}>
               {guiasBib.map((g) => (
                 <Box key={g.id} sx={[glassSx, { borderRadius: 3, px: 2.25, py: 1.75 }]}>
@@ -295,32 +340,115 @@ const MiPanelPage = () => {
                   </Stack>
                 </Box>
               ))}
+              {guiasBib.length === 0 && (
+                <EmptyState
+                  icon={FormatListNumberedRounded}
+                  title="Sin guías paso a paso"
+                  description="Crea una guía escrita que tus pacientes sigan en Autorregulación."
+                  actionLabel="Guía paso a paso"
+                  onAction={() => openBibModal()}
+                />
+              )}
             </Stack>
           </Box>
         </Paper>
+        </>
       )}
+
+      {tab === 'tips' && (
+        <Paper sx={{ p: 2.5 }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' }, mb: 1 }}>
+            <SectionLabel>Tips para tus pacientes</SectionLabel>
+            <Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => openTipModal()}>
+              Nuevo tip
+            </Button>
+          </Stack>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.78rem', mb: 2 }}>
+            Rotan en el Inicio del paciente o aparecen al pasar el mouse sobre las métricas.
+          </Typography>
+          <Stack spacing={1.5}>
+            {tips.map((t) => (
+              <Stack key={t.id} direction="row" spacing={1.5} sx={[glassSx, { borderRadius: '12px', px: 2.25, py: 1.75, alignItems: 'center' }]}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" sx={{ lineHeight: 1.5 }}>{t.texto}</Typography>
+                  <Typography sx={{ fontFamily: monoFont, fontSize: '0.62rem', color: 'text.disabled', mt: 0.5 }}>
+                    {t.creadoPor}
+                  </Typography>
+                </Box>
+                <Chip
+                  size="small"
+                  label={t.contexto === 'inicio' ? 'Inicio' : 'Métricas'}
+                  sx={{
+                    fontSize: '0.62rem',
+                    bgcolor: alpha(t.contexto === 'inicio' ? '#E2B84A' : '#60a5fa', 0.12),
+                    color: t.contexto === 'inicio' ? '#E2B84A' : '#60a5fa',
+                  }}
+                />
+                <Tooltip title="Editar tip">
+                  <IconButton size="small" onClick={() => openTipModal(t)} aria-label={`Editar tip`}>
+                    <EditRounded sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Eliminar tip">
+                  <IconButton size="small" onClick={() => void eliminarTip(t.id)} aria-label="Eliminar tip">
+                    <DeleteRounded sx={{ fontSize: 16, color: 'rgba(248,113,113,0.7)' }} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            ))}
+            {tips.length === 0 && (
+              <EmptyState
+                icon={TipsAndUpdatesRounded}
+                title="Sin tips publicados"
+                description="Escribe frases breves que acompañen a tus pacientes en Inicio y en las métricas."
+                actionLabel="Nuevo tip"
+                onAction={() => openTipModal()}
+              />
+            )}
+          </Stack>
+        </Paper>
+      )}
+
+      {/* Nuevo tip */}
+      <Dialog open={tipModal} onClose={() => setTipModal(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>{editingTipId ? 'Editar tip' : 'Nuevo tip'}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 0.5 }}>
+            <TextField
+              label="Texto del tip"
+              value={tipForm.texto}
+              onChange={(e) => setTipForm((f) => ({ ...f, texto: e.target.value }))}
+              multiline
+              minRows={2}
+              required
+              placeholder="Ej: Respirar 4-7-8 tres ciclos baja la activación."
+            />
+            <Select
+              size="small"
+              value={tipForm.contexto}
+              onChange={(e) => setTipForm((f) => ({ ...f, contexto: e.target.value as TipContexto }))}
+            >
+              {TIP_CONTEXTOS.map((c) => <MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>)}
+            </Select>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTipModal(false)}>Cancelar</Button>
+          <Button variant="contained" onClick={guardarTip} disabled={!tipValid}>
+            {editingTipId ? 'Guardar cambios' : 'Publicar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Nueva guía (video o paso a paso) */}
       <Dialog open={guiaModal} onClose={() => setGuiaModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {editingGuiaId
-            ? 'Editar guía en video'
-            : editingBibId
-              ? 'Editar guía paso a paso'
-              : 'Nueva guía para pacientes'}
+          {tipoGuia === 'video'
+            ? editingGuiaId ? 'Editar video' : 'Nuevo video de YouTube'
+            : editingBibId ? 'Editar guía paso a paso' : 'Nueva guía paso a paso'}
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 0.5 }}>
-            {!editingGuiaId && !editingBibId && (
-              <SegmentedTabs
-                tabs={[
-                  { id: 'video', label: 'Video de YouTube' },
-                  { id: 'pasos', label: 'Paso a paso' },
-                ]}
-                value={tipoGuia}
-                onChange={(id) => setTipoGuia(id as 'video' | 'pasos')}
-              />
-            )}
             {tipoGuia === 'video' && (
             <>
             <TextField
@@ -455,6 +583,35 @@ const MiPanelPage = () => {
                   </Typography>
                 </Stack>
                 <StressBar value={pacienteView.estres} showValue={false} height={5} />
+              </Box>
+              {/* Signos de hoy: mismos datos que ve el paciente en CAREband */}
+              <Box>
+                <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 1 }}>
+                  Signos de hoy
+                </Typography>
+                <Grid container spacing={1}>
+                  {(() => {
+                    const s = signosDe(String(pacienteView.id))
+                    if (!s) return <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>Sin lecturas de CAREband.</Typography>
+                    return [
+                      ['FC', `${s.frecuenciaCardiaca} bpm`],
+                      ['Presión', `${s.presionSistolica}/${s.presionDiastolica}`],
+                      ['SpO₂', `${s.oxigenoSangre}%`],
+                      ['Sueño', `${s.tipoSueno} · ${s.horasSueno}h`],
+                      ['Calorías', `${s.caloriasDia.toLocaleString('es')} kcal`],
+                      ['Pasos', s.pasosDia.toLocaleString('es')],
+                    ].map(([label, value]) => (
+                      <Grid key={label} size={6}>
+                        <Box sx={{ px: 1.25, py: 1, borderRadius: 2, background: alpha('#ffffff', 0.04) }}>
+                          <Typography sx={{ fontFamily: monoFont, fontSize: '0.78rem' }}>{value}</Typography>
+                          <Typography sx={{ fontSize: '0.58rem', color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            {label}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    ))
+                  })()}
+                </Grid>
               </Box>
               {[
                 ['Última cita', pacienteView.ultimaCita],

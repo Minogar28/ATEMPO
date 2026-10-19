@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Paper, Slider, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { ArrowBackRounded, PlayArrowRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, VideoPlayerDialog } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel, VideoPlayerDialog } from '@src/components'
 import { glassMustardSx, glassSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
@@ -40,12 +40,7 @@ const AutorregulacionPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Autorregulación" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Autorregulación</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Pausas guiadas para volver a tu centro.
-        </Typography>
-      </Box>
+      <PageHeader title="Autorregulación" subtitle="Pausas guiadas para volver a tu centro." />
 
       {/* Flujo PAUSA */}
       <Paper sx={{ p: { xs: 3, md: 4 }, minHeight: 320, display: 'grid', placeItems: 'center' }}>
@@ -228,79 +223,106 @@ const AutorregulacionPage = () => {
         )}
       </Paper>
 
-      {/* Guías en video publicadas por el psicólogo */}
+      {/* Guías en video publicadas por el psicólogo — carrusel horizontal */}
       {videoGuias.length > 0 && (
         <Box>
           <SectionLabel>Guías en video de tu psicólogo</SectionLabel>
-          <Grid container spacing={2}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              overflowX: 'auto',
+              pb: 1,
+              scrollSnapType: 'x mandatory',
+              '&::-webkit-scrollbar': { height: 6 },
+              '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.12)', borderRadius: 999 },
+            }}
+          >
             {videoGuias.map((g) => (
-              <Grid key={g.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <Box
-                  component="button"
-                  onClick={() => setPlaying(g)}
-                  sx={[
-                    glassSx,
-                    {
-                      borderRadius: 4,
-                      overflow: 'hidden',
-                      p: 0,
-                      border: '1px solid rgba(255,255,255,0.11)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      width: '100%',
-                      fontFamily: 'inherit',
-                      transition: 'transform 0.2s, border-color 0.2s',
-                      '&:hover': { transform: 'translateY(-2px)', borderColor: 'rgba(226,184,74,0.35)' },
-                    },
-                  ]}
-                >
-                  <Box sx={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
-                    <Box
-                      component="img"
-                      src={youtubeThumb(g.videoId)}
-                      alt={g.titulo}
-                      loading="lazy"
-                      sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    />
+              <Box
+                key={g.id}
+                component="button"
+                onClick={() => setPlaying(g)}
+                sx={[
+                  glassSx,
+                  {
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    p: 0,
+                    border: '1px solid rgba(255,255,255,0.11)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: 280,
+                    minWidth: 280,
+                    scrollSnapAlign: 'start',
+                    fontFamily: 'inherit',
+                    color: 'inherit',
+                    transition: 'transform 0.2s, border-color 0.2s',
+                    '&:hover': { transform: 'translateY(-2px)', borderColor: 'rgba(226,184,74,0.35)' },
+                  },
+                ]}
+              >
+                <Box sx={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+                  <Box
+                    component="img"
+                    src={youtubeThumb(g.videoId)}
+                    alt={g.titulo}
+                    loading="lazy"
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'grid',
+                      placeItems: 'center',
+                      background: 'rgba(12,31,60,0.35)',
+                    }}
+                  >
                     <Box
                       sx={{
-                        position: 'absolute',
-                        inset: 0,
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
                         display: 'grid',
                         placeItems: 'center',
-                        background: 'rgba(12,31,60,0.35)',
+                        background: 'linear-gradient(135deg, #E2B84A, #c9a035)',
+                        boxShadow: '0 0 24px rgba(226,184,74,0.4)',
                       }}
                     >
-                      <Box
-                        sx={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: '50%',
-                          display: 'grid',
-                          placeItems: 'center',
-                          background: 'linear-gradient(135deg, #E2B84A, #c9a035)',
-                          boxShadow: '0 0 24px rgba(226,184,74,0.4)',
-                        }}
-                      >
-                        <PlayArrowRounded sx={{ fontSize: 22, color: '#0C1F3C' }} />
-                      </Box>
+                      <PlayArrowRounded sx={{ fontSize: 22, color: '#0C1F3C' }} />
                     </Box>
                   </Box>
-                  <Box sx={{ p: 1.5 }}>
-                    <Typography sx={{ fontSize: '0.6rem', color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      {g.categoria}
-                    </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3, mt: 0.25 }}>
-                      {g.titulo}
-                    </Typography>
-                    <Typography sx={{ fontFamily: monoFont, fontSize: '0.62rem', color: 'text.disabled', mt: 0.25 }}>
-                      {g.duracion} · {g.creadoPor}
-                    </Typography>
-                  </Box>
                 </Box>
-              </Grid>
+                <Box sx={{ p: 2 }}>
+                  <Typography sx={{ fontSize: '0.6rem', color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {g.categoria}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3, mt: 0.5 }}>
+                    {g.titulo}
+                  </Typography>
+                  {g.descripcion && (
+                    <Typography
+                      sx={{
+                        fontSize: '0.72rem',
+                        color: 'text.secondary',
+                        mt: 0.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {g.descripcion}
+                    </Typography>
+                  )}
+                  <Typography sx={{ fontFamily: monoFont, fontSize: '0.62rem', color: 'text.disabled', mt: 1 }}>
+                    {g.duracion} · {g.creadoPor}
+                  </Typography>
+                </Box>
+              </Box>
             ))}
-          </Grid>
+          </Stack>
         </Box>
       )}
 

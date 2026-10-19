@@ -55,6 +55,7 @@ const Navbar = () => {
               ['#modulos', 'Plataforma'],
               ['#experiencia', 'Experiencia'],
               ['#roles', 'Roles'],
+              ['#equipo', 'Equipo'],
               ['#privacidad', 'Privacidad'],
             ].map(([href, label]) => (
               <Link

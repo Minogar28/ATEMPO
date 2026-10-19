@@ -15,4 +15,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    // Túneles (ngrok) — permite cualquier subdominio de ngrok-free.dev
+    allowedHosts: ['.ngrok-free.dev', '.ngrok.io'],
+  },
 })

@@ -15,11 +15,13 @@ import {
 import { Link as RouterLink } from 'react-router'
 import { alpha } from '@mui/material/styles'
 import type { SvgIconComponent } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, StressBar, StressRing } from '@src/components'
+import { EmptyState, PageMetaData, SectionLabel, StatCard, StressBar, StressRing } from '@src/components'
+import { fechaRelativa } from '@src/helpers/dates'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { useHome } from './hooks/useHome'
+import { CHECKIN_MOODS } from './hooks/useHome'
 
 const ACTION_ICONS: Record<string, SvgIconComponent> = {
   monitor: MonitorHeartRounded,
@@ -43,7 +45,7 @@ const ESTADO_COLOR: Record<string, string> = {
 }
 
 const HomePage = () => {
-  const { greeting, esPaciente, stressLevel, stats, quickActions, episodes, citas, tip } = useHome()
+  const { greeting, esPaciente, stressLevel, stats, quickActions, episodes, citas, tip, checkIn, checkInHoy, statTooltip } = useHome()
 
   return (
     <Stack spacing={3} sx={riseInSx}>
@@ -68,31 +70,47 @@ const HomePage = () => {
             <Grid container spacing={2}>
               {stats.map((stat) => (
                 <Grid key={stat.id} size={{ xs: 6, sm: 3 }}>
-                  <Box
-                    sx={{
-                      px: 2,
-                      py: 2,
-                      borderRadius: 2,
-                      background: alpha('#ffffff', 0.04),
-                      border: '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <Typography sx={{ fontFamily: monoFont, fontSize: '1.4rem', fontWeight: 500 }}>
-                      {stat.value}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      {stat.label}
-                    </Typography>
-                    {stat.hint && (
-                      <Typography sx={{ fontSize: '0.62rem', color: 'text.disabled' }}>{stat.hint}</Typography>
-                    )}
-                  </Box>
+                  <StatCard value={stat.value} label={stat.label} hint={stat.hint} tooltip={statTooltip(stat.id)} />
                 </Grid>
               ))}
             </Grid>
           </Grid>
         </Grid>
       </Paper>
+
+      {/* Check-in de 1 toque (paciente) */}
+      {esPaciente && (
+        <Paper sx={{ px: 2.5, py: 2 }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}>
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {checkInHoy ? `Check-in de hoy: ${checkInHoy.mood}` : '¿Cómo vas hoy?'}
+              </Typography>
+              <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>
+                {checkInHoy ? `Registrado ${fechaRelativa(checkInHoy.ts)} — puedes actualizarlo.` : 'Un toque registra tu estado y alimenta tu semáforo.'}
+              </Typography>
+            </Box>
+            <Stack direction="row" sx={{ gap: 0.75, flexWrap: 'wrap' }}>
+              {CHECKIN_MOODS.map((m) => {
+                const activo = checkInHoy?.mood === m.mood
+                return (
+                  <Chip
+                    key={m.mood}
+                    label={m.mood}
+                    size="small"
+                    onClick={() => checkIn(m.mood, m.level)}
+                    sx={{
+                      bgcolor: activo ? alpha(stressColor(m.level), 0.18) : alpha('#ffffff', 0.05),
+                      border: `1px solid ${alpha(activo ? stressColor(m.level) : '#ffffff', activo ? 0.45 : 0.1)}`,
+                      color: activo ? stressColor(m.level) : 'text.secondary',
+                    }}
+                  />
+                )
+              })}
+            </Stack>
+          </Stack>
+        </Paper>
+      )}
 
       {/* Acciones rápidas (solo lo que el rol puede abrir) */}
       <Box>
@@ -127,7 +145,7 @@ const HomePage = () => {
       </Box>
 
       {/* Paciente: episodios recientes */}
-      {esPaciente && episodes.length > 0 && (
+      {esPaciente && (
         <Box>
           <SectionLabel>Episodios recientes</SectionLabel>
           <Paper sx={{ p: 2 }}>
@@ -161,6 +179,15 @@ const HomePage = () => {
                   </Typography>
                 </Stack>
               ))}
+              {episodes.length === 0 && (
+                <EmptyState
+                  icon={TimelineRounded}
+                  title="Sin registros todavía"
+                  description="Tu historial de episodios aparecerá aquí."
+                  actionLabel="Registrar episodio"
+                  actionTo="/monitoreo"
+                />
+              )}
             </Stack>
           </Paper>
         </Box>
@@ -196,9 +223,11 @@ const HomePage = () => {
                 </Stack>
               ))}
               {citas.length === 0 && (
-                <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
-                  No hay citas registradas todavía.
-                </Typography>
+                <EmptyState
+                  icon={CalendarMonthRounded}
+                  title="Sin citas registradas"
+                  description="Las citas que se agenden aparecerán aquí."
+                />
               )}
             </Stack>
           </Paper>
@@ -206,11 +235,11 @@ const HomePage = () => {
       )}
 
       {/* Tip según rol */}
-      <Box sx={[glassMustardSx, { borderRadius: 3, p: 2.5 }]}>
+      <Box sx={[glassMustardSx, { borderRadius: '12px', p: 2.5 }]}>
         <Typography sx={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'primary.main', mb: 1 }}>
           {esPaciente ? 'Tip del día' : 'Nota'}
         </Typography>
-        <Typography variant="body2" sx={{ lineHeight: 1.7 }}>
+        <Typography key={tip} variant="body2" sx={{ lineHeight: 1.7, animation: 'riseIn 0.5s ease-out' }}>
           {tip}
         </Typography>
       </Box>

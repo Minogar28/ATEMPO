@@ -1,29 +1,24 @@
 import { Box, Button, Chip, Grid, IconButton, Paper, Slider, Stack, TextField, Tooltip as MuiTooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { DeleteRounded, SearchRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, StressBar } from '@src/components'
+import { DeleteRounded, SearchRounded, TimelineRounded } from '@mui/icons-material'
+import { EmptyState, PageHeader, PageMetaData, SectionLabel, StressBar } from '@src/components'
 import { fechaRelativa } from '@src/helpers/dates'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
-import { displayFont, monoFont } from '@src/theme/typography'
+import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { useMonitoreo } from './hooks/useMonitoreo'
 import { MOODS, TRIGGERS } from './types'
 
 const MonitoreoPage = () => {
-  const { episodes, search, setSearch, weekData, level, setLevel, mood, setMood, trigger, setTrigger, note, setNote, registrar, eliminar } =
+  const { episodes, search, setSearch, rango, setRango, weekData, level, setLevel, mood, setMood, trigger, setTrigger, note, setNote, registrar, eliminar } =
     useMonitoreo()
 
   return (
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Monitoreo" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Monitoreo</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Registra y observa la evolución de tus episodios de estrés.
-        </Typography>
-      </Box>
+      <PageHeader title="Monitoreo" subtitle="Registra y observa la evolución de tus episodios de estrés." />
 
       <Grid container spacing={2}>
         {/* Formulario de registro */}
@@ -125,15 +120,34 @@ const MonitoreoPage = () => {
             </Paper>
 
             <Paper sx={{ p: 2.5, flex: 1 }}>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' }, mb: 1.5 }}>
-                <SectionLabel>Historial</SectionLabel>
+              <SectionLabel>Historial</SectionLabel>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1.5}
+                sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' }, mb: 2 }}
+              >
+                <Stack direction="row" spacing={0.5}>
+                  {([['7d', '7 días'], ['30d', '30 días'], ['todo', 'Todo']] as const).map(([key, label]) => (
+                    <Chip
+                      key={key}
+                      label={label}
+                      size="small"
+                      onClick={() => setRango(key)}
+                      sx={{
+                        bgcolor: rango === key ? alpha('#E2B84A', 0.18) : alpha('#ffffff', 0.05),
+                        border: `1px solid ${alpha(rango === key ? '#E2B84A' : '#ffffff', rango === key ? 0.4 : 0.1)}`,
+                        color: rango === key ? '#E2B84A' : 'text.secondary',
+                      }}
+                    />
+                  ))}
+                </Stack>
                 <TextField
                   size="small"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar episodio…"
                   slotProps={{ input: { startAdornment: <SearchRounded sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} /> } }}
-                  sx={{ minWidth: 200 }}
+                  sx={{ minWidth: 160 }}
                 />
               </Stack>
               <Stack spacing={1.5} sx={{ maxHeight: 260, overflowY: 'auto', pr: 0.5 }}>
@@ -162,6 +176,13 @@ const MonitoreoPage = () => {
                     </MuiTooltip>
                   </Stack>
                 ))}
+                {episodes.length === 0 && (
+                  <EmptyState
+                    icon={TimelineRounded}
+                    title="Sin episodios registrados"
+                    description="Usa el formulario o el check-in de Inicio para tu primer registro."
+                  />
+                )}
               </Stack>
             </Paper>
           </Stack>
@@ -169,7 +190,7 @@ const MonitoreoPage = () => {
       </Grid>
 
       {/* Zona psicoeducativa */}
-      <Box sx={[glassMustardSx, { borderRadius: 5, p: 2.5 }]}>
+      <Box sx={[glassMustardSx, { borderRadius: '12px', p: 2.5 }]}>
         <Typography sx={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'primary.main', mb: 1 }}>
           Comprender tu semáforo
         </Typography>

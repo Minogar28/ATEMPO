@@ -11,8 +11,10 @@ import type { Role } from '@src/services/auth.service'
 
 // Panel de conversación reutilizable: lo monta la burbuja flotante de la app
 // y la videollamada (modo 'sesion' = el interlocutor es el psicólogo).
-const ChatArea = ({ agente, rol, sx }: { agente: AgenteInfo; rol?: Role; sx?: SxProps<Theme> }) => {
-  const { messages, typing, enviar } = useChat(agente.tipo, rol)
+// `chat` permite inyectar el estado desde fuera (p. ej. para contar no leídos).
+const ChatArea = ({ agente, rol, chat, sx }: { agente: AgenteInfo; rol?: Role; chat?: ReturnType<typeof useChat>; sx?: SxProps<Theme> }) => {
+  const interno = useChat(agente.tipo, rol)
+  const { messages, typing, enviar } = chat ?? interno
   const [input, setInput] = useState('')
   const endRef = useRef<HTMLDivElement | null>(null)
 

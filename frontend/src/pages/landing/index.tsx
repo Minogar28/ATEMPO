@@ -6,6 +6,7 @@ import DashboardDemos from './DashboardDemos'
 import AppsDemos from './AppsDemos'
 import Features from './Features'
 import ElementsPreview from './ElementsPreview'
+import Team from './Team'
 import WhatYouGet from './WhatYouGet'
 import Footer from './Footer'
 
@@ -35,6 +36,7 @@ const LandingPage = () => (
       <AppsDemos />
       <Features />
       <ElementsPreview />
+      <Team />
       <WhatYouGet />
       <Footer />
     </Box>

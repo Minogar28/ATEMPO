@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Chip, Grid, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { CloseRounded, SearchRounded, StarRounded, VideocamRounded } from '@mui/icons-material'
-import { SectionLabel } from '@src/components'
+import { CloseRounded, EventBusyRounded, SearchRounded, StarRounded, VideocamRounded } from '@mui/icons-material'
+import { EmptyState, SectionLabel } from '@src/components'
 import { monoFont } from '@src/theme/typography'
 import { useAgenda } from '../hooks/useAgenda'
 import SesionVirtual from './SesionVirtual'
@@ -64,17 +64,17 @@ const AgendaPaciente = () => {
                   </Stack>
 
                   <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75, mb: 1.5 }}>
-                    {p.disponibles.map((h) => {
-                      const activo = esSeleccionada && slot === h
+                    {p.slots.map((s) => {
+                      const activo = esSeleccionada && slot?.bloqueId === s.bloqueId
                       return (
                         <Chip
-                          key={h}
-                          label={h}
+                          key={s.bloqueId}
+                          label={`${s.fecha} · ${s.hora}`}
                           size="small"
-                          onClick={() => seleccionar(p, h)}
+                          onClick={() => seleccionar(p, s)}
                           sx={{
                             fontFamily: monoFont,
-                            fontSize: '0.7rem',
+                            fontSize: '0.62rem',
                             bgcolor: activo ? alpha('#E2B84A', 0.18) : alpha('#ffffff', 0.05),
                             border: `1px solid ${alpha(activo ? '#E2B84A' : '#ffffff', activo ? 0.4 : 0.1)}`,
                             color: activo ? '#E2B84A' : 'text.secondary',
@@ -82,6 +82,11 @@ const AgendaPaciente = () => {
                         />
                       )
                     })}
+                    {p.slots.length === 0 && (
+                      <Typography sx={{ fontSize: '0.68rem', color: 'text.disabled', fontStyle: 'italic' }}>
+                        Sin horarios abiertos esta semana
+                      </Typography>
+                    )}
                   </Stack>
 
                   <Button
@@ -91,7 +96,7 @@ const AgendaPaciente = () => {
                     onClick={reservar}
                     sx={{ mt: 'auto' }}
                   >
-                    {esSeleccionada && slot ? `Reservar ${slot}` : 'Elige un horario'}
+                    {esSeleccionada && slot ? `Reservar ${slot.fecha} ${slot.hora}` : 'Elige un horario'}
                   </Button>
                 </Box>
               </Grid>
@@ -176,9 +181,11 @@ const AgendaPaciente = () => {
           })}
         </Grid>
         {citas.length === 0 && (
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 3 }}>
-            Aún no tienes citas. Reserva un horario con tu psicólogo.
-          </Typography>
+          <EmptyState
+            icon={EventBusyRounded}
+            title="Aún no tienes citas"
+            description="Elige un horario disponible en las tarjetas de arriba para agendar tu primera sesión."
+          />
         )}
       </Paper>
     </Stack>

@@ -30,7 +30,7 @@ typography:
 rounded:
   chip: "10px"
   input: "12px"
-  card: "20px"
+  card: "14px"
   dialog: "24px"
   pill: "999px"
 components:

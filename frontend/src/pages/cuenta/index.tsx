@@ -1,7 +1,7 @@
 import { Avatar, Badge, Box, Divider, IconButton, Paper, Stack, Switch, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { AddPhotoAlternateRounded, BusinessRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
 import { glassSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { useCuenta } from './hooks/useCuenta'
@@ -31,12 +31,7 @@ const CuentaPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Perfil" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Mi cuenta</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Tu información, datos fisiológicos y privacidad.
-        </Typography>
-      </Box>
+      <PageHeader title="Mi cuenta" subtitle="Tu información, datos fisiológicos y privacidad." />
 
       <Paper sx={{ p: 2.5 }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>

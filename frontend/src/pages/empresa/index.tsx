@@ -1,13 +1,14 @@
 import { useSyncExternalStore } from 'react'
-import { Avatar, Box, Grid, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Grid, MenuItem, Paper, Select, Stack, Tooltip as MuiTooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { LockRounded } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { PageMetaData, SectionLabel, SegmentedTabs, StressBar } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs, StressBar } from '@src/components'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
-import { displayFont, monoFont } from '@src/theme/typography'
+import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { getLogoEmpresa, subscribePerfil } from '@src/services/perfil.service'
+import { METRICA_EXPLICACIONES } from '@src/services/tips.service'
 import { useEmpresa } from './hooks/useEmpresa'
 
 const chartTooltip = {
@@ -34,12 +35,7 @@ const EmpresaPage = () => {
           >
             {empresa.slice(0, 1)}
           </Avatar>
-          <Box>
-            <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Panel de empresa</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Métricas agregadas y anonimizadas de bienestar.
-            </Typography>
-          </Box>
+          <PageHeader title="Panel de empresa" subtitle="Métricas agregadas y anonimizadas de bienestar." />
         </Stack>
         <Select
           value={empresa}
@@ -54,6 +50,7 @@ const EmpresaPage = () => {
       <Grid container spacing={2}>
         {kpis.map((k) => (
           <Grid key={k.id} size={{ xs: 6, md: 3 }}>
+            <MuiTooltip title={METRICA_EXPLICACIONES[k.id] ?? ''} arrow placement="top">
             <Paper sx={{ p: 2 }}>
               <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <Typography sx={{ fontFamily: monoFont, fontSize: '1.5rem', color: k.color }}>{k.value}</Typography>
@@ -67,6 +64,7 @@ const EmpresaPage = () => {
                 {k.label}
               </Typography>
             </Paper>
+            </MuiTooltip>
           </Grid>
         ))}
       </Grid>

@@ -11,4 +11,6 @@ export const STORAGE_KEYS = {
   episodios: 'atempo.episodios',
   pausas: 'atempo.pausas',
   perfil: 'atempo.perfil',
+  signos: 'atempo.signos',
+  tips: 'atempo.tips',
 } as const

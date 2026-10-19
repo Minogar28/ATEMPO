@@ -18,9 +18,9 @@ import {
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { AddRounded, DeleteRounded, EditRounded, SearchRounded, VisibilityRounded } from '@mui/icons-material'
-import { PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
 import { glassSx, riseInSx } from '@src/theme/brand'
-import { displayFont, monoFont } from '@src/theme/typography'
+import { monoFont } from '@src/theme/typography'
 import { useGestion } from './hooks/useGestion'
 import type { GestionTab } from './types'
 
@@ -42,12 +42,7 @@ const GestionPage = () => {
       <PageMetaData title="Gestión" />
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ justifyContent: 'space-between' }}>
-        <Box>
-          <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Gestión</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Empresas, psicólogos y pacientes de la plataforma.
-          </Typography>
-        </Box>
+        <PageHeader title="Gestión" subtitle="Empresas, psicólogos y pacientes de la plataforma." />
         <Button variant="contained" startIcon={<AddRounded />} onClick={openCreate} sx={{ alignSelf: { sm: 'center' } }}>
           Nueva {TAB_LABELS[tab]}
         </Button>

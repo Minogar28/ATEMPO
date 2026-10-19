@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { listNombres } from '@src/services/gestion.service'
+import { promediosSignos } from '@src/services/signos.service'
 import type { AreaData, EmpresaKpi, PsicologoKpi, TendenciaPoint } from '../types'
 
 // Las empresas del selector salen del mismo store que administra Gestión.
@@ -38,5 +39,18 @@ export const useEmpresa = () => {
   const empresas = ['Todas las empresas', ...listNombres('empresas')]
   const [empresa, setEmpresa] = useState('Todas las empresas')
   const [tab, setTab] = useState('tendencia')
-  return { empresa, setEmpresa, empresas, tab, setTab, kpis, tendencia, areas, psicologos }
+  // Promedios biométricos del programa — agregados y sin identificación.
+  const prom = promediosSignos()
+  const kpisCompletos: EmpresaKpi[] = [
+    ...kpis,
+    ...(prom
+      ? [
+          { id: 'fc', label: 'FC promedio', value: `${prom.frecuenciaCardiaca} bpm`, color: '#f87171' },
+          { id: 'sueno', label: 'Sueño prom.', value: `${prom.horasSueno} h`, color: '#60a5fa' },
+          { id: 'spo2', label: 'SpO₂ prom.', value: `${prom.oxigenoSangre}%`, color: '#4ade80' },
+          { id: 'pasos', label: 'Pasos prom.', value: prom.pasosDia.toLocaleString('es'), color: '#f0d070' },
+        ]
+      : []),
+  ]
+  return { empresa, setEmpresa, empresas, tab, setTab, kpis: kpisCompletos, tendencia, areas, psicologos }
 }

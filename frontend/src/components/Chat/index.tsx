@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Box, Fab, Paper, Tooltip } from '@mui/material'
+import { Badge, Box, Fab, Paper, Tooltip } from '@mui/material'
 import { ChatBubbleRounded, CloseRounded } from '@mui/icons-material'
 import { glassStrongSx, riseInSx } from '@src/theme/brand'
 import { useAuth } from '@src/states/AuthContext'
 import ChatArea from './ChatArea'
 import { agenteParaRol } from './helper'
+import { useChat } from './useChat'
 
 // Burbuja de chat flotante: pacientes hablan con el asistente de bienestar;
 // psicólogos/empresas con la guía de datos del programa.
@@ -13,6 +14,16 @@ const Chat = () => {
   const [open, setOpen] = useState(false)
   const rol = user?.roles[0]
   const agente = agenteParaRol(rol)
+  const chat = useChat(agente.tipo, rol)
+  // Marca de leídos: el saludo inicial (índice 0) no cuenta; abrir o cerrar
+  // el panel marca todo lo visible como leído.
+  const [leidos, setLeidos] = useState(1)
+  const unread = open ? 0 : chat.messages.slice(leidos).filter((m) => m.de === 'agente').length
+
+  const toggle = () => {
+    setLeidos(chat.messages.length)
+    setOpen((o) => !o)
+  }
 
   return (
     <Box sx={{ position: 'fixed', bottom: { xs: 84, md: 24 }, right: 20, zIndex: 1100 }}>
@@ -32,22 +43,29 @@ const Chat = () => {
             },
           ]}
         >
-          <ChatArea agente={agente} rol={rol} />
+          <ChatArea agente={agente} rol={rol} chat={chat} />
         </Paper>
       )}
       <Tooltip title={open ? 'Cerrar chat' : 'Asistente ATEMPO'} placement="left">
-        <Fab
-          size="medium"
-          onClick={() => setOpen((o) => !o)}
-          sx={{
-            bgcolor: 'primary.main',
-            color: '#0C1F3C',
-            boxShadow: '0 8px 24px rgba(226,184,74,0.35)',
-            '&:hover': { bgcolor: '#c9a035' },
-          }}
+        <Badge
+          badgeContent={unread}
+          color="error"
+          overlap="circular"
+          sx={{ '& .MuiBadge-badge': { fontFamily: 'inherit', fontSize: '0.6rem' } }}
         >
-          {open ? <CloseRounded /> : <ChatBubbleRounded />}
-        </Fab>
+          <Fab
+            size="medium"
+            onClick={toggle}
+            sx={{
+              bgcolor: 'primary.main',
+              color: '#0C1F3C',
+              boxShadow: '0 8px 24px rgba(226,184,74,0.35)',
+              '&:hover': { bgcolor: '#c9a035' },
+            }}
+          >
+            {open ? <CloseRounded /> : <ChatBubbleRounded />}
+          </Fab>
+        </Badge>
       </Tooltip>
     </Box>
   )

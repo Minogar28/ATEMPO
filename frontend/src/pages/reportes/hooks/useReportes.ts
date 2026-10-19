@@ -8,6 +8,8 @@ import { listEpisodios } from '@src/services/episodios.service'
 import { listGuias } from '@src/services/guias.service'
 import { readGestion } from '@src/services/gestion.service'
 import { resumenBienestar } from '@src/services/bienestar.service'
+import { listSignos, promediosSignos } from '@src/services/signos.service'
+import { useAuth } from '@src/states/AuthContext'
 import { STORAGE_KEYS } from '@src/config/api'
 import type { PreviewPoint, ReportType } from '../types'
 
@@ -17,6 +19,7 @@ const tipos: ReportType[] = [
   { id: 'participacion', nombre: 'Participación', descripcion: 'Uso de módulos y adherencia', formato: 'Excel' },
   { id: 'citas', nombre: 'Ocupación de agenda', descripcion: 'Citas por psicólogo y estado', formato: 'Excel' },
   { id: 'intervencion', nombre: 'Casos de intervención', descripcion: 'Episodios en nivel alto (solo roles clínicos)', formato: 'PDF' },
+  { id: 'signos', nombre: 'Signos vitales', descripcion: 'FC, presión, sueño, SpO₂, calorías y pasos por paciente/día', formato: 'PDF' },
   { id: 'respaldo', nombre: 'Respaldo de datos', descripcion: 'Todo lo guardado en este navegador (localStorage)', formato: 'JSON' },
 ]
 
@@ -48,11 +51,36 @@ const snapshotLocal = () => {
   return data
 }
 
+// Registros reales que contiene cada informe — el conteo se muestra en la
+// tarjeta para que el reporte nunca salga "vacío" sin aviso.
+const conteoPorTipo = (): Record<string, number> => {
+  const episodios = listEpisodios()
+  const citas = listCitas()
+  return {
+    ejecutivo: readGestion().empresas.length,
+    estres: episodios.length,
+    participacion: 8, // métricas del resumen de bienestar
+    citas: citas.length,
+    intervencion: episodios.filter((e) => e.level >= 65).length,
+    signos: listSignos().reduce((a, s) => a + s.dias.length, 0),
+    respaldo: Object.keys(localStorage).filter((k) => k.startsWith('atempo.')).length,
+  }
+}
+
 export const useReportes = () => {
+  const { user } = useAuth()
+  const esEmpresa = user?.roles[0] === 'empresa'
   const [periodo, setPeriodo] = useState('ultimo-mes')
   const [area, setArea] = useState('todas')
   const [empresa, setEmpresa] = useState('todas')
   const [generando, setGenerando] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const conteos = conteoPorTipo()
+
+  const term = search.trim().toLowerCase()
+  const tiposVisibles = term
+    ? tipos.filter((t) => `${t.nombre} ${t.descripcion}`.toLowerCase().includes(term))
+    : tipos
 
   const generar = async (tipo: ReportType) => {
     setGenerando(tipo.id)
@@ -135,6 +163,62 @@ export const useReportes = () => {
         })
         break
       }
+      case 'signos': {
+        if (esEmpresa) {
+          // Rol empresa: solo agregados anonimizados, sin paciente identificable.
+          const p = promediosSignos()
+          exportPdf({
+            title: 'Signos vitales — promedios del programa (anonimizado)',
+            fileName: nombreBase,
+            columns: [
+              { header: 'Métrica', dataKey: 'metrica' },
+              { header: 'Promedio', dataKey: 'valor' },
+            ],
+            rows: p
+              ? [
+                  { metrica: 'Pacientes con lecturas', valor: p.n },
+                  { metrica: 'Frecuencia cardíaca', valor: `${p.frecuenciaCardiaca} bpm` },
+                  { metrica: 'Presión arterial', valor: `${p.presion} mmHg` },
+                  { metrica: 'Oxígeno en sangre', valor: `${p.oxigenoSangre}%` },
+                  { metrica: 'Sueño', valor: `${p.horasSueno} h` },
+                  { metrica: 'Calorías / día', valor: `${p.caloriasDia.toLocaleString('es')} kcal` },
+                  { metrica: 'Pasos / día', valor: p.pasosDia.toLocaleString('es') },
+                ]
+              : [],
+          })
+        } else {
+          // Roles clínicos/admin: detalle estructurado por paciente y día.
+          exportPdf({
+            title: 'Signos vitales — detalle por paciente',
+            fileName: nombreBase,
+            columns: [
+              { header: 'Paciente', dataKey: 'paciente' },
+              { header: 'Fecha', dataKey: 'fecha' },
+              { header: 'FC (bpm)', dataKey: 'fc' },
+              { header: 'Presión', dataKey: 'presion' },
+              { header: 'Sueño', dataKey: 'sueno' },
+              { header: 'SpO₂', dataKey: 'spo2' },
+              { header: 'kcal', dataKey: 'kcal' },
+              { header: 'Pasos', dataKey: 'pasos' },
+            ],
+            rows: listSignos()
+              .filter((s) => s.pacienteId !== 'propio')
+              .flatMap((s) =>
+                s.dias.map((d) => ({
+                  paciente: s.paciente,
+                  fecha: d.fecha,
+                  fc: d.frecuenciaCardiaca,
+                  presion: `${d.presionSistolica}/${d.presionDiastolica}`,
+                  sueno: `${d.tipoSueno} · ${d.horasSueno}h`,
+                  spo2: `${d.oxigenoSangre}%`,
+                  kcal: d.caloriasDia,
+                  pasos: d.pasosDia,
+                })),
+              ),
+          })
+        }
+        break
+      }
       case 'respaldo': {
         downloadJson(nombreBase, {
           generado: new Date().toISOString(),
@@ -149,5 +233,5 @@ export const useReportes = () => {
     void swalFire({ icon: 'success', title: 'Reporte descargado', text: `${tipo.nombre} · ${tipo.formato}`, timer: 1600, showConfirmButton: false })
   }
 
-  return { tipos, preview: buildPreview(), periodo, setPeriodo, area, setArea, empresa, setEmpresa, generando, generar }
+  return { tipos: tiposVisibles, conteos, search, setSearch, preview: buildPreview(), periodo, setPeriodo, area, setArea, empresa, setEmpresa, generando, generar }
 }

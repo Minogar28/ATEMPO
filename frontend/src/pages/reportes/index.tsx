@@ -1,9 +1,10 @@
-import { Box, Button, CircularProgress, Grid, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
-import { DownloadRounded, LockRounded } from '@mui/icons-material'
+import { Box, Button, CircularProgress, Grid, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
+import { DownloadRounded, LockRounded, SearchRounded } from '@mui/icons-material'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { PageMetaData, SectionLabel } from '@src/components'
+import { PageHeader, PageMetaData, SectionLabel } from '@src/components'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
-import { displayFont } from '@src/theme/typography'
+
+import { monoFont } from '@src/theme/typography'
 import { useReportes } from './hooks/useReportes'
 
 const Filtro = ({ label, value, onChange, options }: {
@@ -23,19 +24,14 @@ const Filtro = ({ label, value, onChange, options }: {
 )
 
 const ReportesPage = () => {
-  const { tipos, preview, periodo, setPeriodo, area, setArea, empresa, setEmpresa, generando, generar } =
+  const { tipos, conteos, search, setSearch, preview, periodo, setPeriodo, area, setArea, empresa, setEmpresa, generando, generar } =
     useReportes()
 
   return (
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Reportes" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.7rem' }}>Reportes</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Genera informes de bienestar con alcance según tu rol.
-        </Typography>
-      </Box>
+      <PageHeader title="Reportes" subtitle="Genera informes de bienestar con alcance según tu rol." />
 
       {/* Filtros */}
       <Paper sx={{ p: 2.5 }}>
@@ -87,6 +83,17 @@ const ReportesPage = () => {
       </Paper>
 
       {/* Tipos de reporte */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' } }}>
+        <SectionLabel>Informes disponibles</SectionLabel>
+        <TextField
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar informe…"
+          slotProps={{ input: { startAdornment: <SearchRounded sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} /> } }}
+          sx={{ minWidth: 220 }}
+        />
+      </Stack>
       <Grid container spacing={2}>
         {tipos.map((t) => (
           <Grid key={t.id} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -94,6 +101,9 @@ const ReportesPage = () => {
               <Typography variant="body2" sx={{ fontWeight: 600 }}>{t.nombre}</Typography>
               <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', mt: 0.5, flex: 1 }}>
                 {t.descripcion}
+              </Typography>
+              <Typography sx={{ fontFamily: monoFont, fontSize: '0.62rem', color: conteos[t.id] ? 'text.secondary' : 'text.disabled', mt: 1 }}>
+                {conteos[t.id] ? `${conteos[t.id]} registro(s) listos` : 'Sin datos aún'}
               </Typography>
               <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                 <Typography sx={{ fontSize: '0.62rem', color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.1em' }}>

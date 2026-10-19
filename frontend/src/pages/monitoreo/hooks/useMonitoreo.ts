@@ -16,6 +16,10 @@ const weekData: WeekPoint[] = [
 
 // Los episodios persisten en localStorage (services/episodios.service.ts) y
 // alimentan el estado del avatar; el backend reemplazará la capa de datos.
+export type RangoFecha = '7d' | '30d' | 'todo'
+
+const RANGO_DIAS: Record<Exclude<RangoFecha, 'todo'>, number> = { '7d': 7, '30d': 30 }
+
 export const useMonitoreo = () => {
   const [episodes, setEpisodes] = useState<Episodio[]>(listEpisodios)
   const [level, setLevel] = useState(50)
@@ -23,11 +27,14 @@ export const useMonitoreo = () => {
   const [trigger, setTrigger] = useState<string>('')
   const [note, setNote] = useState('')
   const [search, setSearch] = useState('')
+  const [rango, setRango] = useState<RangoFecha>('todo')
+  const [ahora] = useState(() => Date.now())
 
+  const desde = rango === 'todo' ? null : ahora - RANGO_DIAS[rango] * 86_400_000
   const term = search.trim().toLowerCase()
-  const episodesVisibles = term
-    ? episodes.filter((e) => `${e.mood} ${e.trigger} ${e.note ?? ''}`.toLowerCase().includes(term))
-    : episodes
+  const episodesVisibles = episodes
+    .filter((e) => desde == null || e.ts >= desde)
+    .filter((e) => !term || `${e.mood} ${e.trigger} ${e.note ?? ''}`.toLowerCase().includes(term))
 
   const registrar = () => {
     if (!mood || !trigger) {
@@ -53,6 +60,7 @@ export const useMonitoreo = () => {
   return {
     episodes: episodesVisibles,
     search, setSearch,
+    rango, setRango,
     weekData,
     level, setLevel,
     mood, setMood,
