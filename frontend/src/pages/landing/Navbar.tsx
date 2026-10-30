@@ -2,22 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router'
 import { Box, Button, Link } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { glassMustardSx } from '@src/theme/brand'
+import { AppLogo } from '@src/components'
 import { displayFont } from '@src/theme/typography'
 import { ContainerBox } from './components'
-
-const MarcaBox = () => (
-  <Box
-    sx={[
-      glassMustardSx,
-      { width: 34, height: 34, borderRadius: '10px', display: 'grid', placeItems: 'center' },
-    ]}
-  >
-    <Box component="span" sx={{ fontFamily: displayFont, fontSize: '1.05rem', color: 'primary.main' }}>
-      A
-    </Box>
-  </Box>
-)
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -44,7 +31,7 @@ const Navbar = () => {
       <ContainerBox>
         <Box sx={{ display: 'flex', height: '4.25rem', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-            <MarcaBox />
+            <AppLogo size={38} />
             <Box component="span" sx={{ fontFamily: displayFont, fontSize: '1.15rem' }}>
               ATEMPO
             </Box>

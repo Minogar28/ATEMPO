@@ -122,3 +122,11 @@ export const avatarGlowSx = (clima: 'sun' | 'cloud' | 'storm') =>
     cloud: '0 0 48px rgba(100,140,180,0.45), 0 0 96px rgba(100,140,180,0.15)',
     storm: '0 0 48px rgba(80,60,160,0.55), 0 0 96px rgba(80,60,160,0.18)',
   })[clima]
+
+// Aro degradado que enmarca el avatar según estado.
+export const avatarRingSx = (clima: 'sun' | 'cloud' | 'storm') =>
+  ({
+    sun: `linear-gradient(135deg, #f0d070, ${brandTokens.mustard}, ${brandTokens.mustardDark})`,
+    cloud: 'linear-gradient(135deg, #a9c3dc, #648cb4, #3f5f80)',
+    storm: 'linear-gradient(135deg, #8f7be0, #503ca0, #2f2366)',
+  })[clima]

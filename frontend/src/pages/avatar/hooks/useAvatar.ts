@@ -34,5 +34,6 @@ export const useAvatar = () => {
     xp: resumen.xp,
     nivelXp: resumen.nivel,
     progresoNivel: resumen.progresoNivel,
+    ultimoEstres: resumen.ultimoEstres,
   }
 }

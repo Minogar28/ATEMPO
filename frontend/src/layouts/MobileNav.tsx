@@ -5,7 +5,6 @@ import { alpha } from '@mui/material/styles'
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router'
 import type { MenuItem } from '@src/helpers/menu'
 import { brandTokens, glassBottombarSx, navActiveSx } from '@src/theme/brand'
-import { useAuth } from '@src/states/AuthContext'
 import { useAppMenu } from './LeftSideBar/useAppMenu'
 
 // Barra inferior flotante del prototipo: 5 primarios + "Más" que despliega
@@ -44,7 +43,6 @@ const NavButton = ({ item, active }: { item: MenuItem; active: boolean }) => (
 const MobileNav = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { logout } = useAuth()
   const [showMore, setShowMore] = useState(false)
   const sections = useAppMenu()
   const items = useMemo(() => sections.flatMap((s) => s.items), [sections])
@@ -52,10 +50,10 @@ const MobileNav = () => {
   const rest = items.slice(5)
   const isMoreActive = rest.some((m) => m.path === pathname)
 
-  const handleLogout = async () => {
+  // La página de despedida es la que cierra la sesión.
+  const handleLogout = () => {
     setShowMore(false)
-    await logout()
-    navigate('/auth/login', { replace: true })
+    navigate('/auth/logout', { replace: true })
   }
 
   return (

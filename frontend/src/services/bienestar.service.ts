@@ -1,6 +1,6 @@
 import { diaKey } from '@src/helpers/dates'
 import { listCitas } from './citas.service'
-import { listEpisodios } from './episodios.service'
+import { getUltimoEstres, listEpisodios } from './episodios.service'
 import { listPausas } from './pausas.service'
 
 // Proyección de bienestar: agrega lo que el paciente ha hecho en la plataforma
@@ -36,13 +36,16 @@ const XP_PAUSA = 80
 const XP_CITA = 60
 const XP_BASE = 120
 
+export const climaDeEstres = (estres: number | null): Clima =>
+  (estres ?? 42) >= 65 ? 'storm' : (estres ?? 42) >= 35 ? 'cloud' : 'sun'
+
 export const resumenBienestar = (): BienestarResumen => {
   const episodios = listEpisodios() // ya vienen por ts desc
   const pausas = listPausas()
   const citas = listCitas()
 
-  const ultimoEstres = episodios[0]?.level ?? null
-  const clima: Clima = (ultimoEstres ?? 42) >= 65 ? 'storm' : (ultimoEstres ?? 42) >= 35 ? 'cloud' : 'sun'
+  const ultimoEstres = getUltimoEstres()
+  const clima = climaDeEstres(ultimoEstres)
 
   const estresPromedio = episodios.length
     ? Math.round(episodios.reduce((acc, e) => acc + e.level, 0) / episodios.length)

@@ -1,10 +1,13 @@
-import type { SvgIconComponent } from '@mui/icons-material'
+import type { ComponentType } from 'react'
+import type { SxProps, Theme } from '@mui/material/styles'
+
+export type MenuIcon = ComponentType<{ sx?: SxProps<Theme> }>
 
 export interface MenuItem {
   key: string
   label: string
   path?: string
-  icon?: SvgIconComponent
+  icon?: MenuIcon
   children?: MenuItem[]
 }
 

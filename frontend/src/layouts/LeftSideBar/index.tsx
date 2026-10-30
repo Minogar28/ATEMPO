@@ -9,6 +9,7 @@ import { alpha } from '@mui/material/styles'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@src/states/AuthContext'
 import { useLayout } from '@src/states/LayoutContext'
+import { getUltimoEstres, subscribeEpisodios } from '@src/services/episodios.service'
 import { getFotoPerfil, subscribePerfil } from '@src/services/perfil.service'
 import { brandTokens, glassSidebarSx, glassSx } from '@src/theme/brand'
 import { stressColor } from '@src/theme/status'
@@ -21,7 +22,7 @@ const { sidenavWidth, sidenavCollapsedWidth } = brandTokens
 const divider = { borderBottom: '1px solid rgba(255,255,255,0.06)' }
 
 const SidebarContent = ({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) => {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const sections = useAppMenu()
   // Foto reactiva: se relee del store cuando cambia (evento atempo:perfil).
@@ -29,11 +30,11 @@ const SidebarContent = ({ collapsed, onToggle }: { collapsed: boolean; onToggle:
     subscribePerfil,
     () => (user ? getFotoPerfil(user.id) : null),
   ) ?? undefined
+  // Misma fuente que la página Avatar: el último episodio registrado.
+  const estres = useSyncExternalStore(subscribeEpisodios, getUltimoEstres)
 
-  const handleLogout = async () => {
-    await logout()
-    navigate('/auth/login', { replace: true })
-  }
+  // La página de despedida es la que cierra la sesión.
+  const handleLogout = () => navigate('/auth/logout', { replace: true })
 
   const collapseButton = (
     <Tooltip title={collapsed ? 'Expandir menú' : 'Contraer menú'} placement="right">
@@ -108,14 +109,14 @@ const SidebarContent = ({ collapsed, onToggle }: { collapsed: boolean; onToggle:
       {user?.stressLevel != null && (
         <Box sx={{ px: collapsed ? 1.5 : 1.5, pb: 1 }}>
           {collapsed ? (
-            <Tooltip title={`Estrés ${user.stressLevel}%`} placement="right">
+            <Tooltip title={estres == null ? 'Estrés: sin registros' : `Estrés ${estres}%`} placement="right">
               <Box sx={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)' }}>
                 <Box
                   sx={{
                     height: '100%',
-                    width: `${user.stressLevel}%`,
+                    width: `${estres ?? 0}%`,
                     borderRadius: 999,
-                    background: stressColor(user.stressLevel),
+                    background: stressColor(estres ?? 0),
                     transition: 'width 0.7s',
                   }}
                 />
@@ -127,17 +128,17 @@ const SidebarContent = ({ collapsed, onToggle }: { collapsed: boolean; onToggle:
                 <Typography sx={{ fontSize: '0.5625rem', color: alpha('#FAF6ED', 0.3), letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                   Estrés
                 </Typography>
-                <Typography sx={{ fontFamily: monoFont, fontSize: '0.625rem', fontWeight: 500, color: stressColor(user.stressLevel) }}>
-                  {user.stressLevel}%
+                <Typography sx={{ fontFamily: monoFont, fontSize: '0.625rem', fontWeight: 500, color: estres == null ? alpha('#FAF6ED', 0.3) : stressColor(estres) }}>
+                  {estres == null ? 'Sin registros' : `${estres}%`}
                 </Typography>
               </Box>
               <Box sx={{ height: 4, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
                 <Box
                   sx={{
                     height: '100%',
-                    width: `${user.stressLevel}%`,
+                    width: `${estres ?? 0}%`,
                     borderRadius: 999,
-                    background: stressColor(user.stressLevel),
+                    background: stressColor(estres ?? 0),
                     transition: 'width 0.7s',
                   }}
                 />

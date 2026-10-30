@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { glassMustardSx } from '@src/theme/brand'
+import { AppLogo } from '@src/components'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { ContainerBox } from './components'
 
@@ -9,16 +9,7 @@ const Footer = () => (
     <ContainerBox>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-          <Box
-            sx={[
-              glassMustardSx,
-              { width: 30, height: 30, borderRadius: '9px', display: 'grid', placeItems: 'center' },
-            ]}
-          >
-            <Box component="span" sx={{ fontFamily: displayFont, fontSize: '0.95rem', color: 'primary.main' }}>
-              A
-            </Box>
-          </Box>
+          <AppLogo size={32} />
           <Box component="span" sx={{ fontFamily: displayFont, fontSize: '1rem' }}>
             ATEMPO
           </Box>

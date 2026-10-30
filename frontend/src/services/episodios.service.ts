@@ -38,16 +38,28 @@ const read = (): Episodio[] => {
   }
 }
 
+// Evento interno para que el sidebar reaccione a un episodio nuevo o borrado
+// sin recargar la página.
+const EPISODIOS_EVENT = 'atempo:episodios'
+
 const write = (episodios: Episodio[]) => {
   try {
     localStorage.setItem(STORAGE_KEYS.episodios, JSON.stringify(episodios))
   } catch {
     // localStorage lleno o bloqueado: el estado en memoria igual responde
   }
+  window.dispatchEvent(new Event(EPISODIOS_EVENT))
+}
+
+export const subscribeEpisodios = (listener: () => void): (() => void) => {
+  window.addEventListener(EPISODIOS_EVENT, listener)
+  return () => window.removeEventListener(EPISODIOS_EVENT, listener)
 }
 
 export const listEpisodios = (): Episodio[] =>
   [...read()].sort((a, b) => b.ts - a.ts)
+
+export const getUltimoEstres = (): number | null => listEpisodios()[0]?.level ?? null
 
 export const createEpisodio = (input: NuevoEpisodio): Episodio => {
   const episodio: Episodio = { ...input, id: Date.now(), ts: Date.now() }

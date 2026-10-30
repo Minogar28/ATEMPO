@@ -81,8 +81,8 @@ const Login = () => {
         <LockRounded sx={{ fontSize: 13, color: 'primary.main' }} />
         <Typography variant="caption" color="text.secondary" align="center">
           {!API_URL
-            ? `Modo demo · ${APP_NAME} — el menú se adapta al rol elegido`
-            : 'Tus datos de salud están protegidos · Ley 1581 de 2012'}
+            ? `En ${APP_NAME} nos preocupamos por tu privacidad`
+            : '¿Qué esperas para empezar?'}
         </Typography>
       </Stack>
     </Paper>
