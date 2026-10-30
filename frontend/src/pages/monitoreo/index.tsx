@@ -1,9 +1,10 @@
 import { Box, Button, Chip, Grid, IconButton, Paper, Slider, Stack, TextField, Tooltip as MuiTooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { DeleteRounded, SearchRounded, TimelineRounded } from '@mui/icons-material'
+import { DeleteRounded, EditNoteRounded, HistoryRounded, SearchRounded, ShowChartRounded, TimelineRounded } from '@mui/icons-material'
 import { EmptyState, PageHeader, PageMetaData, SectionLabel, StressBar } from '@src/components'
 import { fechaRelativa } from '@src/helpers/dates'
+import { iconoModulo } from '@src/helpers/permissions'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
 import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
@@ -18,13 +19,13 @@ const MonitoreoPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Monitoreo" />
 
-      <PageHeader title="Monitoreo" subtitle="Registra y observa la evolución de tus episodios de estrés." />
+      <PageHeader icon={iconoModulo('monitoreo')} title="Monitoreo" subtitle="Registra y observa la evolución de tus episodios de estrés." />
 
       <Grid container spacing={2}>
         {/* Formulario de registro */}
         <Grid size={{ xs: 12, md: 5 }}>
           <Paper sx={{ p: 3, height: '100%' }}>
-            <SectionLabel>Nuevo episodio</SectionLabel>
+            <SectionLabel icon={EditNoteRounded}>Nuevo episodio</SectionLabel>
 
             <Typography sx={{ fontSize: '0.78rem', mb: 1 }}>
               Intensidad:{' '}
@@ -97,7 +98,7 @@ const MonitoreoPage = () => {
         <Grid size={{ xs: 12, md: 7 }}>
           <Stack spacing={2} sx={{ height: '100%' }}>
             <Paper sx={{ p: 2.5 }}>
-              <SectionLabel>Evolución semanal</SectionLabel>
+              <SectionLabel icon={ShowChartRounded}>Evolución semanal</SectionLabel>
               <Box sx={{ height: 180 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={weekData}>
@@ -120,7 +121,7 @@ const MonitoreoPage = () => {
             </Paper>
 
             <Paper sx={{ p: 2.5, flex: 1 }}>
-              <SectionLabel>Historial</SectionLabel>
+              <SectionLabel icon={HistoryRounded}>Historial</SectionLabel>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
                 spacing={1.5}

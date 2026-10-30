@@ -2,8 +2,11 @@ import type { ReactNode } from 'react'
 import { Box, Chip, Grid, Paper, Stack, Switch, Tooltip as MuiTooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
-import { Gauge, PageHeader, PageMetaData, SectionLabel } from '@src/components'
+import { FavoriteRounded, InsightsRounded } from '@mui/icons-material'
+import { Gauge, KpiIcon, PageHeader, PageMetaData, SectionLabel } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { riseInSx } from '@src/theme/brand'
+import { METRIC_ICONS } from '@src/theme/icons'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { METRICA_EXPLICACIONES } from '@src/services/tips.service'
 import { useCareband } from './hooks/useCareband'
@@ -14,6 +17,7 @@ const tipMetrica = (key: string) => METRICA_EXPLICACIONES[key] ?? ''
 const MiniStat = ({ label, value, unit, color, tipKey }: { label: string; value: string | number; unit: string; color: string; tipKey: string }) => (
     <MuiTooltip title={tipMetrica(tipKey)} arrow placement="top">
       <Paper sx={{ p: 2, height: '100%' }}>
+        <KpiIcon icon={METRIC_ICONS[tipKey]} color={color} sx={{ mb: 1 }} />
         <Typography sx={{ fontFamily: monoFont, fontSize: '1.5rem', color }}>{value}</Typography>
         <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
           {label} · {unit}
@@ -36,7 +40,7 @@ const CarebandPage = () => {
       <PageMetaData title="CAREband" />
 
       <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <PageHeader title="CAREband" subtitle="Signos vitales en tiempo real desde tu dispositivo." />
+        <PageHeader icon={iconoModulo('careband')} title="CAREband" subtitle="Signos vitales en tiempo real desde tu dispositivo." />
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <Chip
             size="small"
@@ -55,9 +59,9 @@ const CarebandPage = () => {
         <>
           <Paper sx={{ p: 3 }}>
             <Grid container spacing={2} sx={{ justifyContent: 'space-around' }}>
-              <Grid size="auto"><GaugeTip tipKey="fc"><Gauge value={vitals.hr} min={40} max={160} unit="bpm" label="Frec. cardíaca" color="#f87171" /></GaugeTip></Grid>
-              <Grid size="auto"><GaugeTip tipKey="spo2"><Gauge value={vitals.spo2} min={80} max={100} unit="%" label="SpO₂" color="#60a5fa" /></GaugeTip></Grid>
-              <Grid size="auto"><GaugeTip tipKey="temp"><Gauge value={vitals.temp} min={34} max={40} unit="°C" label="Temperatura" color="#E2B84A" /></GaugeTip></Grid>
+              <Grid size="auto"><GaugeTip tipKey="fc"><Gauge value={vitals.hr} min={40} max={160} unit="bpm" label="Frec. cardíaca" color="#f87171" icon={METRIC_ICONS.fc} /></GaugeTip></Grid>
+              <Grid size="auto"><GaugeTip tipKey="spo2"><Gauge value={vitals.spo2} min={80} max={100} unit="%" label="SpO₂" color="#60a5fa" icon={METRIC_ICONS.spo2} /></GaugeTip></Grid>
+              <Grid size="auto"><GaugeTip tipKey="temp"><Gauge value={vitals.temp} min={34} max={40} unit="°C" label="Temperatura" color="#E2B84A" icon={METRIC_ICONS.temp} /></GaugeTip></Grid>
             </Grid>
           </Paper>
 
@@ -67,6 +71,7 @@ const CarebandPage = () => {
             <Grid size={{ xs: 6, md: 3 }}><MiniStat tipKey="presion" label="Presión arterial" value={dia?.presion ?? '—'} unit="mmHg" color="#f0d070" /></Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Paper sx={{ p: 2, height: '100%' }}>
+                <KpiIcon icon={METRIC_ICONS.estado} color="#4ade80" sx={{ mb: 1 }} />
                 <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em', mb: 0.5 }}>
                   Estado
                 </Typography>
@@ -80,7 +85,7 @@ const CarebandPage = () => {
 
           {/* Métricas del día: sueño, actividad y gasto calórico */}
           <Box>
-            <SectionLabel>Métricas del día</SectionLabel>
+            <SectionLabel icon={InsightsRounded}>Métricas del día</SectionLabel>
             <Grid container spacing={2}>
               <Grid size={{ xs: 6, md: 3 }}>
                 <MiniStat tipKey="sueno" label="Sueño" value={dia?.tipoSueno ?? '—'} unit={dia ? `${dia.horasSueno} h` : 'última noche'} color="#60a5fa" />
@@ -98,7 +103,7 @@ const CarebandPage = () => {
           </Box>
 
           <Box>
-            <SectionLabel>Frecuencia cardíaca · últimos 2 min</SectionLabel>
+            <SectionLabel icon={FavoriteRounded}>Frecuencia cardíaca · últimos 2 min</SectionLabel>
             <Paper sx={{ p: 2, height: 200 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={trend}>

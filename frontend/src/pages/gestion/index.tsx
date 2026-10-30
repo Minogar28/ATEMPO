@@ -19,6 +19,8 @@ import {
 import { alpha } from '@mui/material/styles'
 import { AddRounded, DeleteRounded, EditRounded, SearchRounded, VisibilityRounded } from '@mui/icons-material'
 import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
+import { METRIC_ICONS } from '@src/theme/icons'
 import { glassSx, riseInSx } from '@src/theme/brand'
 import { monoFont } from '@src/theme/typography'
 import { useGestion } from './hooks/useGestion'
@@ -42,7 +44,7 @@ const GestionPage = () => {
       <PageMetaData title="Gestión" />
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ justifyContent: 'space-between' }}>
-        <PageHeader title="Gestión" subtitle="Empresas, psicólogos y pacientes de la plataforma." />
+        <PageHeader icon={iconoModulo('gestion')} title="Gestión" subtitle="Empresas, psicólogos y pacientes de la plataforma." />
         <Button variant="contained" startIcon={<AddRounded />} onClick={openCreate} sx={{ alignSelf: { sm: 'center' } }}>
           Nueva {TAB_LABELS[tab]}
         </Button>
@@ -69,7 +71,7 @@ const GestionPage = () => {
       </Stack>
 
       <Paper sx={{ p: 2.5 }}>
-        <SectionLabel>{tab.charAt(0).toUpperCase() + tab.slice(1)} · {rows.length}</SectionLabel>
+        <SectionLabel icon={METRIC_ICONS[tab]}>{tab.charAt(0).toUpperCase() + tab.slice(1)} · {rows.length}</SectionLabel>
         <Stack spacing={1.5}>
           {rows.map((row) => (
             <Box key={row.id} sx={[glassSx, { borderRadius: 4, p: 1.75 }]}>

@@ -1,7 +1,8 @@
 import { Box, Button, Grid, Paper, Slider, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { ArrowBackRounded, PlayArrowRounded } from '@mui/icons-material'
+import { ArrowBackRounded, MenuBookRounded, PlayArrowRounded, VideoLibraryRounded } from '@mui/icons-material'
 import { PageHeader, PageMetaData, SectionLabel, VideoPlayerDialog } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { glassMustardSx, glassSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
@@ -40,7 +41,7 @@ const AutorregulacionPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Autorregulación" />
 
-      <PageHeader title="Autorregulación" subtitle="Pausas guiadas para volver a tu centro." />
+      <PageHeader icon={iconoModulo('autorregulacion')} title="Autorregulación" subtitle="Pausas guiadas para volver a tu centro." />
 
       {/* Flujo PAUSA */}
       <Paper sx={{ p: { xs: 3, md: 4 }, minHeight: 320, display: 'grid', placeItems: 'center' }}>
@@ -226,7 +227,7 @@ const AutorregulacionPage = () => {
       {/* Guías en video publicadas por el psicólogo — carrusel horizontal */}
       {videoGuias.length > 0 && (
         <Box>
-          <SectionLabel>Guías en video de tu psicólogo</SectionLabel>
+          <SectionLabel icon={VideoLibraryRounded}>Guías en video de tu psicólogo</SectionLabel>
           <Stack
             direction="row"
             spacing={2}
@@ -328,7 +329,7 @@ const AutorregulacionPage = () => {
 
       {/* Biblioteca de guías paso a paso — las publica el psicólogo */}
       <Box>
-        <SectionLabel>Biblioteca de guías</SectionLabel>
+        <SectionLabel icon={MenuBookRounded}>Biblioteca de guías</SectionLabel>
         <Grid container spacing={2}>
           {guiasBib.map((g) => (
             <Grid key={g.id} size={{ xs: 6, sm: 4, md: 2 }}>

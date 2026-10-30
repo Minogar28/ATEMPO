@@ -18,9 +18,11 @@ import {
   Typography,
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { AddRounded, DeleteRounded, EditRounded, EventBusyRounded, FormatListNumberedRounded, GroupsRounded, PlayArrowRounded, SearchRounded, TipsAndUpdatesRounded, VideocamRounded, VisibilityRounded } from '@mui/icons-material'
+import { AddRounded, DeleteRounded, EditRounded, EventAvailableRounded, EventBusyRounded, FormatListNumberedRounded, GroupsRounded, PlayArrowRounded, SearchRounded, TipsAndUpdatesRounded, TodayRounded, VideocamRounded, VideoLibraryRounded, VisibilityRounded } from '@mui/icons-material'
 import { EmptyState, PageHeader, PageMetaData, SectionLabel, SegmentedTabs, StatCard, StressBar, VideoPlayerDialog } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { glassSx, riseInSx } from '@src/theme/brand'
+import { METRIC_ICONS } from '@src/theme/icons'
 import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { signosDe } from '@src/services/signos.service'
@@ -60,13 +62,13 @@ const MiPanelPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Mi Panel" />
 
-      <PageHeader title="Mi Panel" subtitle="Tu agenda, citas y pacientes en un solo lugar." />
+      <PageHeader icon={iconoModulo('mi-panel')} title="Mi Panel" subtitle="Tu agenda, citas y pacientes en un solo lugar." />
 
       <Grid container spacing={2}>
         {stats.map((s) => (
           <Grid key={s.label} size={{ xs: 6, md: 3 }}>
             <Paper sx={{ p: 1.25 }}>
-              <StatCard value={s.value} label={s.label} tooltip={s.tip} />
+              <StatCard icon={METRIC_ICONS[s.id]} value={s.value} label={s.label} tooltip={s.tip} />
             </Paper>
           </Grid>
         ))}
@@ -97,7 +99,7 @@ const MiPanelPage = () => {
 
       {tab === 'agenda' && (
         <Box>
-          <SectionLabel>Disponibilidad — arrastra para abrir, toca un bloque para quitarlo</SectionLabel>
+          <SectionLabel icon={EventAvailableRounded}>Disponibilidad — arrastra para abrir, toca un bloque para quitarlo</SectionLabel>
           <AgendaCalendario
             bloques={bloques}
             citas={citasEventos}
@@ -109,7 +111,7 @@ const MiPanelPage = () => {
 
       {tab === 'citas' && (
         <Paper sx={{ p: 2.5 }}>
-          <SectionLabel>Citas de hoy</SectionLabel>
+          <SectionLabel icon={TodayRounded}>Citas de hoy</SectionLabel>
           <Stack spacing={1.5}>
             {citasHoy.map((c) => (
               <Box
@@ -166,7 +168,7 @@ const MiPanelPage = () => {
 
       {tab === 'pacientes' && (
         <Paper sx={{ p: 2.5 }}>
-          <SectionLabel>Pacientes asignados</SectionLabel>
+          <SectionLabel icon={GroupsRounded}>Pacientes asignados</SectionLabel>
           <Stack spacing={1.5}>
             {pacientes.map((p) => (
               <Box key={p.id} sx={[glassSx, { borderRadius: 3, px: 2.25, py: 1.75 }]}>
@@ -207,7 +209,7 @@ const MiPanelPage = () => {
         <>
         <Paper sx={{ p: 2.5 }}>
           <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-            <SectionLabel>Biblioteca de videos para pacientes · {guias.length}</SectionLabel>
+            <SectionLabel icon={VideoLibraryRounded}>Biblioteca de videos para pacientes · {guias.length}</SectionLabel>
             <Button size="small" variant="contained" startIcon={<PlayArrowRounded />} onClick={() => openGuiaModal()}>
               Nuevo video
             </Button>
@@ -298,7 +300,7 @@ const MiPanelPage = () => {
         {/* Guías paso a paso — sección independiente con su propio formulario */}
         <Paper sx={{ p: 2.5 }}>
           <Stack direction="row" spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 1.5, flexWrap: 'wrap', gap: 1 }}>
-            <SectionLabel>Guías paso a paso · {guiasBib.length}</SectionLabel>
+            <SectionLabel icon={FormatListNumberedRounded}>Guías paso a paso · {guiasBib.length}</SectionLabel>
             <Button size="small" variant="contained" startIcon={<FormatListNumberedRounded />} onClick={() => openBibModal()}>
               Nueva guía
             </Button>
@@ -358,7 +360,7 @@ const MiPanelPage = () => {
       {tab === 'tips' && (
         <Paper sx={{ p: 2.5 }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' }, mb: 1 }}>
-            <SectionLabel>Tips para tus pacientes</SectionLabel>
+            <SectionLabel icon={TipsAndUpdatesRounded}>Tips para tus pacientes</SectionLabel>
             <Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => openTipModal()}>
               Nuevo tip
             </Button>

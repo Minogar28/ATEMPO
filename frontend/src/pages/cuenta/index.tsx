@@ -1,7 +1,8 @@
 import { Avatar, Badge, Box, Divider, IconButton, Paper, Stack, Switch, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { AddPhotoAlternateRounded, BusinessRounded } from '@mui/icons-material'
+import { AddPhotoAlternateRounded, BusinessRounded, VerifiedUserRounded } from '@mui/icons-material'
 import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { glassSx, riseInSx } from '@src/theme/brand'
 import { displayFont, monoFont } from '@src/theme/typography'
 import { useCuenta } from './hooks/useCuenta'
@@ -31,7 +32,7 @@ const CuentaPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Perfil" />
 
-      <PageHeader title="Mi cuenta" subtitle="Tu información, datos fisiológicos y privacidad." />
+      <PageHeader icon={iconoModulo('cuenta')} title="Mi cuenta" subtitle="Tu información, datos fisiológicos y privacidad." />
 
       <Paper sx={{ p: 2.5 }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
@@ -134,7 +135,7 @@ const CuentaPage = () => {
 
       {tab === 'privacidad' && (
         <Paper sx={{ p: 2.5 }}>
-          <SectionLabel>Consentimientos</SectionLabel>
+          <SectionLabel icon={VerifiedUserRounded}>Consentimientos</SectionLabel>
           <Stack spacing={1.5}>
             {consentimientos.map((c) => (
               <Box key={c.id} sx={[glassSx, { borderRadius: 4, p: 1.75 }]}>

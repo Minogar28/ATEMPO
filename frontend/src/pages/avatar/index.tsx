@@ -1,10 +1,11 @@
 import { Box, Grid, LinearProgress, Paper, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { CheckCircleRounded, EmojiEventsRounded, LockRounded } from '@mui/icons-material'
+import { CheckCircleRounded, EmojiEventsRounded, FilterDramaRounded, HistoryRounded, LockRounded } from '@mui/icons-material'
 import felizGif from '@src/assets/images/avatar/feliz.gif'
 import sadGif from '@src/assets/images/avatar/sad.gif'
 import serioGif from '@src/assets/images/avatar/serio.gif'
 import { PageHeader, PageMetaData, SectionLabel, StressBar } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { avatarGlowSx, avatarRingSx, progressBarSx, riseInSx } from '@src/theme/brand'
 import { stressColor } from '@src/theme/status'
 import { displayFont, monoFont } from '@src/theme/typography'
@@ -50,7 +51,7 @@ const AvatarPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Avatar" />
 
-      <PageHeader title="Tu avatar" subtitle="Refleja tu estado según tus evaluaciones y registros." />
+      <PageHeader icon={iconoModulo('avatar')} title="Tu avatar" subtitle="Refleja tu estado según tus evaluaciones y registros." />
 
       {/* Avatar climático + XP */}
       <Paper sx={{ p: 3 }}>
@@ -103,7 +104,7 @@ const AvatarPage = () => {
 
       {/* Escala climática */}
       <Box>
-        <SectionLabel>Escala de estados</SectionLabel>
+        <SectionLabel icon={FilterDramaRounded}>Escala de estados</SectionLabel>
         <Grid container spacing={2}>
           {niveles.map((n) => (
             <Grid key={n.id} size={{ xs: 4 }}>
@@ -126,7 +127,7 @@ const AvatarPage = () => {
 
       {/* Insignias */}
       <Box>
-        <SectionLabel>Insignias</SectionLabel>
+        <SectionLabel icon={EmojiEventsRounded}>Insignias</SectionLabel>
         <Grid container spacing={2}>
           {badges.map((b) => (
             <Grid key={b.id} size={{ xs: 6, sm: 4, md: 2 }}>
@@ -144,7 +145,7 @@ const AvatarPage = () => {
 
       {/* Actividad */}
       <Box>
-        <SectionLabel>Actividad reciente</SectionLabel>
+        <SectionLabel icon={HistoryRounded}>Actividad reciente</SectionLabel>
         <Paper sx={{ p: 2 }}>
           <Stack spacing={1.5}>
             {actividad.map((a) => (

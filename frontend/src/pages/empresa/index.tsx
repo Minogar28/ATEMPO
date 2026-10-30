@@ -1,10 +1,11 @@
 import { useSyncExternalStore } from 'react'
 import { Avatar, Box, Grid, MenuItem, Paper, Select, Stack, Tooltip as MuiTooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { LockRounded } from '@mui/icons-material'
+import { BarChartRounded, GroupsRounded, LockRounded, ShowChartRounded } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { PageHeader, PageMetaData, SectionLabel, SegmentedTabs, StressBar } from '@src/components'
+import { KpiIcon, PageHeader, PageMetaData, SectionLabel, SegmentedTabs, StressBar } from '@src/components'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
+import { METRIC_ICONS } from '@src/theme/icons'
 import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { getLogoEmpresa, subscribePerfil } from '@src/services/perfil.service'
@@ -51,15 +52,16 @@ const EmpresaPage = () => {
         {kpis.map((k) => (
           <Grid key={k.id} size={{ xs: 6, md: 3 }}>
             <MuiTooltip title={METRICA_EXPLICACIONES[k.id] ?? ''} arrow placement="top">
-            <Paper sx={{ p: 2 }}>
-              <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <Typography sx={{ fontFamily: monoFont, fontSize: '1.5rem', color: k.color }}>{k.value}</Typography>
+            <Paper sx={{ p: 2, height: '100%' }}>
+              <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                <KpiIcon icon={METRIC_ICONS[k.id]} color={k.color} />
                 {k.delta && (
                   <Typography sx={{ fontFamily: monoFont, fontSize: '0.62rem', color: k.color }}>
                     {k.delta}
                   </Typography>
                 )}
               </Stack>
+              <Typography sx={{ fontFamily: monoFont, fontSize: '1.5rem', color: k.color }}>{k.value}</Typography>
               <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 {k.label}
               </Typography>
@@ -81,7 +83,7 @@ const EmpresaPage = () => {
 
       {tab === 'tendencia' && (
         <Paper sx={{ p: 2.5, height: 280 }}>
-          <SectionLabel>Estrés promedio vs participación</SectionLabel>
+          <SectionLabel icon={ShowChartRounded}>Estrés promedio vs participación</SectionLabel>
           <ResponsiveContainer width="100%" height="85%">
             <LineChart data={tendencia}>
               <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -97,7 +99,7 @@ const EmpresaPage = () => {
 
       {tab === 'areas' && (
         <Paper sx={{ p: 2.5, height: 280 }}>
-          <SectionLabel>Estrés por área</SectionLabel>
+          <SectionLabel icon={BarChartRounded}>Estrés por área</SectionLabel>
           <ResponsiveContainer width="100%" height="85%">
             <BarChart data={areas} layout="vertical">
               <CartesianGrid stroke="rgba(255,255,255,0.05)" horizontal={false} />
@@ -112,7 +114,7 @@ const EmpresaPage = () => {
 
       {tab === 'psicologos' && (
         <Paper sx={{ p: 2.5 }}>
-          <SectionLabel>Rendimiento del equipo</SectionLabel>
+          <SectionLabel icon={GroupsRounded}>Rendimiento del equipo</SectionLabel>
           <Stack spacing={1.5}>
             {psicologos.map((p) => (
               <Stack key={p.id} direction="row" spacing={2} sx={{ alignItems: 'center', p: 1.5, borderRadius: 4, background: alpha('#ffffff', 0.04) }}>

@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import { HelpOutlineRounded, LegendToggleRounded } from '@mui/icons-material'
 import { SectionLabel } from '@src/components'
 import { glassSx } from '@src/theme/brand'
 import { monoFont } from '@src/theme/typography'
@@ -26,7 +27,7 @@ const LegendDot = ({ color, label }: { color: string; label: string }) => (
 const AgendaSidePanel = ({ totalBloques }: { totalBloques: number }) => (
   <Stack spacing={2}>
     <Box>
-      <SectionLabel>Cómo funciona</SectionLabel>
+      <SectionLabel icon={HelpOutlineRounded}>Cómo funciona</SectionLabel>
       <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', lineHeight: 1.7 }}>
         Arrastra sobre un horario para abrir un bloque de disponibilidad; los pacientes podrán
         reservar sus citas sobre esos bloques.
@@ -37,7 +38,7 @@ const AgendaSidePanel = ({ totalBloques }: { totalBloques: number }) => (
     </Box>
 
     <Box sx={[glassSx, { borderRadius: 3, p: 1.75 }]}>
-      <SectionLabel>Leyenda</SectionLabel>
+      <SectionLabel icon={LegendToggleRounded}>Leyenda</SectionLabel>
       <Stack spacing={1}>
         <LegendDot color={COLOR_DISPONIBLE} label="Disponible para reservar" />
         <LegendDot color={COLOR_CITA} label="Cita programada" />

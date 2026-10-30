@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Chip, Grid, IconButton, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { CloseRounded, EventBusyRounded, SearchRounded, StarRounded, VideocamRounded } from '@mui/icons-material'
+import { CloseRounded, EventBusyRounded, EventNoteRounded, PsychologyRounded, SearchRounded, StarRounded, VideocamRounded } from '@mui/icons-material'
 import { EmptyState, SectionLabel } from '@src/components'
 import { monoFont } from '@src/theme/typography'
 import { useAgenda } from '../hooks/useAgenda'
@@ -29,7 +29,7 @@ const AgendaPaciente = () => {
     <Stack spacing={3}>
       {/* Catálogo de psicólogos */}
       <Paper sx={{ p: 2.5 }}>
-        <SectionLabel>Psicólogos disponibles</SectionLabel>
+        <SectionLabel icon={PsychologyRounded}>Psicólogos disponibles</SectionLabel>
         <Grid container spacing={2}>
           {psicologos.map((p) => {
             const esSeleccionada = seleccionado?.id === p.id
@@ -108,7 +108,7 @@ const AgendaPaciente = () => {
       {/* Mis citas */}
       <Paper sx={{ p: 2.5 }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' }, mb: 2 }}>
-          <SectionLabel>Mis citas</SectionLabel>
+          <SectionLabel icon={EventNoteRounded}>Mis citas</SectionLabel>
           <TextField
             size="small"
             value={search}

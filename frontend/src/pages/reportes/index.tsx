@@ -1,7 +1,8 @@
 import { Box, Button, CircularProgress, Grid, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import { DownloadRounded, LockRounded, SearchRounded } from '@mui/icons-material'
+import { DescriptionRounded, DownloadRounded, LockRounded, QueryStatsRounded, SearchRounded } from '@mui/icons-material'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { PageHeader, PageMetaData, SectionLabel } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
 
 import { monoFont } from '@src/theme/typography'
@@ -31,7 +32,7 @@ const ReportesPage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Reportes" />
 
-      <PageHeader title="Reportes" subtitle="Genera informes de bienestar con alcance según tu rol." />
+      <PageHeader icon={iconoModulo('reportes')} title="Reportes" subtitle="Genera informes de bienestar con alcance según tu rol." />
 
       {/* Filtros */}
       <Paper sx={{ p: 2.5 }}>
@@ -64,7 +65,7 @@ const ReportesPage = () => {
 
       {/* Preview */}
       <Paper sx={{ p: 2.5, height: 240 }}>
-        <SectionLabel>Vista previa — estrés y episodios por semana</SectionLabel>
+        <SectionLabel icon={QueryStatsRounded}>Vista previa — estrés y episodios por semana</SectionLabel>
         <ResponsiveContainer width="100%" height="85%">
           <AreaChart data={preview}>
             <defs>
@@ -84,7 +85,7 @@ const ReportesPage = () => {
 
       {/* Tipos de reporte */}
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' } }}>
-        <SectionLabel>Informes disponibles</SectionLabel>
+        <SectionLabel icon={DescriptionRounded}>Informes disponibles</SectionLabel>
         <TextField
           size="small"
           value={search}

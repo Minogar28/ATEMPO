@@ -258,10 +258,10 @@ export const useMiPanel = () => {
   }
 
   const stats = [
-    { label: 'Pacientes activos', value: pacientes.length, tip: METRICA_EXPLICACIONES.pacientes },
-    { label: 'Citas esta semana', value: 14, tip: METRICA_EXPLICACIONES.citas },
-    { label: 'Estrés promedio', value: 49, tip: METRICA_EXPLICACIONES.estres },
-    { label: 'Guías publicadas', value: guias.length + guiasBib.length, tip: METRICA_EXPLICACIONES.guias },
+    { id: 'pacientes', label: 'Pacientes activos', value: pacientes.length, tip: METRICA_EXPLICACIONES.pacientes },
+    { id: 'citas', label: 'Citas esta semana', value: 14, tip: METRICA_EXPLICACIONES.citas },
+    { id: 'estres', label: 'Estrés promedio', value: 49, tip: METRICA_EXPLICACIONES.estres },
+    { id: 'guias', label: 'Guías publicadas', value: guias.length + guiasBib.length, tip: METRICA_EXPLICACIONES.guias },
   ]
 
   return {

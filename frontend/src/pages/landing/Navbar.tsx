@@ -2,9 +2,18 @@ import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router'
 import { Box, Button, Link } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import { BadgeRounded, GroupsRounded, ShieldRounded, SpaRounded, WidgetsRounded } from '@mui/icons-material'
 import { AppLogo } from '@src/components'
 import { displayFont } from '@src/theme/typography'
 import { ContainerBox } from './components'
+
+const NAV_LINKS = [
+  { href: '#modulos', label: 'Plataforma', icon: WidgetsRounded },
+  { href: '#experiencia', label: 'Experiencia', icon: SpaRounded },
+  { href: '#roles', label: 'Roles', icon: BadgeRounded },
+  { href: '#equipo', label: 'Equipo', icon: GroupsRounded },
+  { href: '#privacidad', label: 'Privacidad', icon: ShieldRounded },
+]
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false)
@@ -38,18 +47,15 @@ const Navbar = () => {
           </Box>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
-            {[
-              ['#modulos', 'Plataforma'],
-              ['#experiencia', 'Experiencia'],
-              ['#roles', 'Roles'],
-              ['#equipo', 'Equipo'],
-              ['#privacidad', 'Privacidad'],
-            ].map(([href, label]) => (
+            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
                 underline="none"
                 sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.625,
                   px: 1.25,
                   py: 0.5,
                   fontSize: '0.78rem',
@@ -58,6 +64,7 @@ const Navbar = () => {
                   transition: 'color 0.2s',
                 }}
               >
+                <Icon sx={{ fontSize: 15, color: 'primary.main' }} />
                 {label}
               </Link>
             ))}

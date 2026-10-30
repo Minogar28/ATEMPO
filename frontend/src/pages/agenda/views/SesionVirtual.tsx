@@ -57,7 +57,7 @@ const SesionVirtual = ({ cita, onFinalizar }: { cita: Cita; onFinalizar: () => v
 
   return (
     <Stack spacing={2}>
-      <PageHeader title="Sesión en curso" subtitle={`${cita.psicologo} · Videollamada segura`} />
+      <PageHeader icon={VideocamRounded} title="Sesión en curso" subtitle={`${cita.psicologo} · Videollamada segura`} />
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: 'stretch' }}>
       <Paper sx={{ overflow: 'hidden', p: 0, flex: 1, minWidth: 0 }}>

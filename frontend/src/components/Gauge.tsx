@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import type { SvgIconComponent } from '@mui/icons-material'
 import { monoFont } from '@src/theme/typography'
 
 interface GaugeProps {
@@ -10,10 +11,11 @@ interface GaugeProps {
   label?: string
   color?: string
   size?: number
+  icon?: SvgIconComponent
 }
 
 // Gauge semicircular para signos vitales (HR, SpO2, temperatura).
-const Gauge = ({ value, min = 0, max = 100, unit = '', label, color = '#E2B84A', size = 130 }: GaugeProps) => {
+const Gauge = ({ value, min = 0, max = 100, unit = '', label, color = '#E2B84A', size = 130, icon: Icon }: GaugeProps) => {
   const ratio = Math.min(1, Math.max(0, (value - min) / (max - min)))
   const w = size
   const h = size * 0.62
@@ -62,8 +64,9 @@ const Gauge = ({ value, min = 0, max = 100, unit = '', label, color = '#E2B84A',
       {label && (
         <Typography
           align="center"
-          sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.12em', mt: -0.5 }}
+          sx={{ fontSize: '0.62rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.12em', mt: -0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}
         >
+          {Icon && <Icon sx={{ fontSize: 13, color }} />}
           {label}
         </Typography>
       )}

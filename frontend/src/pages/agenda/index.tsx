@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material'
 import { PageHeader, PageMetaData } from '@src/components'
+import { iconoModulo } from '@src/helpers/permissions'
 import { usePermissions } from '@src/hooks/usePermissions'
 import { riseInSx } from '@src/theme/brand'
 
@@ -16,6 +17,7 @@ const AgendaPage = () => {
       <PageMetaData title="Citas" />
       <PageHeader
         title="Citas"
+        icon={iconoModulo('agenda')}
         subtitle={esPaciente ? 'Reserva con tu psicólogo y revisa tus próximas sesiones.' : 'Agenda consolidada de las citas.'}
       />
       {esPaciente ? <AgendaPaciente /> : <AgendaConsulta />}

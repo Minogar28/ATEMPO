@@ -1,5 +1,6 @@
 import { Avatar, Chip, Paper, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import { EventNoteRounded } from '@mui/icons-material'
 import { DataTable, SectionLabel } from '@src/components'
 import type { DataTableColumn } from '@src/components'
 import { useAgenda } from '../hooks/useAgenda'
@@ -51,7 +52,7 @@ const AgendaConsulta = () => {
 
   return (
     <Paper sx={{ p: 2.5 }}>
-      <SectionLabel>Agenda — solo lectura</SectionLabel>
+      <SectionLabel icon={EventNoteRounded}>Agenda — solo lectura</SectionLabel>
       <DataTable<Cita>
         rows={citas}
         columns={columns}

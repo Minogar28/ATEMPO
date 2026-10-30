@@ -1,40 +1,54 @@
 import { Avatar, Box, Chip, Grid, Paper, Stack, Typography } from '@mui/material'
 import {
+  AccountCircleRounded,
+  ApartmentRounded,
   AssessmentRounded,
-  BusinessRounded,
+  BedtimeRounded,
+  BoltRounded,
   CalendarMonthRounded,
-  DashboardRounded,
-  GroupsRounded,
+  EditNoteRounded,
+  EventAvailableRounded,
+  EventNoteRounded,
+  HistoryRounded,
+  ManageAccountsRounded,
+  MedicalServicesRounded,
   MonitorHeartRounded,
-  PersonRounded,
   SelfImprovementRounded,
-  SettingsRounded,
   TimelineRounded,
-  VideocamRounded,
+  TipsAndUpdatesRounded,
+  VideoLibraryRounded,
+  WbSunnyRounded,
+  WbTwilightRounded,
 } from '@mui/icons-material'
 import { Link as RouterLink } from 'react-router'
 import { alpha } from '@mui/material/styles'
 import type { SvgIconComponent } from '@mui/icons-material'
-import { EmptyState, PageMetaData, SectionLabel, StatCard, StressBar, StressRing } from '@src/components'
+import { EmptyState, KpiIcon, PageHeader, PageMetaData, SectionLabel, StatCard, StressBar, StressRing } from '@src/components'
 import { fechaRelativa } from '@src/helpers/dates'
 import { glassMustardSx, riseInSx } from '@src/theme/brand'
-import { displayFont, monoFont } from '@src/theme/typography'
+import { METRIC_ICONS } from '@src/theme/icons'
+import { monoFont } from '@src/theme/typography'
 import { stressColor } from '@src/theme/status'
 import { useHome } from './hooks/useHome'
 import { CHECKIN_MOODS } from './hooks/useHome'
 
 const ACTION_ICONS: Record<string, SvgIconComponent> = {
   monitor: MonitorHeartRounded,
-  timeline: TimelineRounded,
+  timeline: EditNoteRounded,
   breath: SelfImprovementRounded,
-  calendar: CalendarMonthRounded,
-  panel: DashboardRounded,
+  calendar: EventAvailableRounded,
+  panel: MedicalServicesRounded,
   report: AssessmentRounded,
-  video: VideocamRounded,
-  person: PersonRounded,
-  settings: SettingsRounded,
-  business: BusinessRounded,
-  users: GroupsRounded,
+  video: VideoLibraryRounded,
+  person: AccountCircleRounded,
+  settings: ManageAccountsRounded,
+  business: ApartmentRounded,
+}
+
+const iconoSaludo = (hora: number): SvgIconComponent => {
+  if (hora < 12) return WbSunnyRounded
+  if (hora < 19) return WbTwilightRounded
+  return BedtimeRounded
 }
 
 const ESTADO_COLOR: Record<string, string> = {
@@ -51,12 +65,11 @@ const HomePage = () => {
     <Stack spacing={3} sx={riseInSx}>
       <PageMetaData title="Inicio" />
 
-      <Box>
-        <Typography sx={{ fontFamily: displayFont, fontSize: '1.9rem' }}>{greeting}</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {esPaciente ? 'Así va tu bienestar hoy.' : 'Así va la operación hoy.'}
-        </Typography>
-      </Box>
+      <PageHeader
+        icon={iconoSaludo(new Date().getHours())}
+        title={greeting}
+        subtitle={esPaciente ? 'Así va tu bienestar hoy.' : 'Así va la operación hoy.'}
+      />
 
       {/* Tarjeta principal: anillo de estrés (paciente) o stats de operación */}
       <Paper sx={{ p: 3 }}>
@@ -70,7 +83,7 @@ const HomePage = () => {
             <Grid container spacing={2}>
               {stats.map((stat) => (
                 <Grid key={stat.id} size={{ xs: 6, sm: 3 }}>
-                  <StatCard value={stat.value} label={stat.label} hint={stat.hint} tooltip={statTooltip(stat.id)} />
+                  <StatCard icon={METRIC_ICONS[stat.id]} value={stat.value} label={stat.label} hint={stat.hint} tooltip={statTooltip(stat.id)} />
                 </Grid>
               ))}
             </Grid>
@@ -114,7 +127,7 @@ const HomePage = () => {
 
       {/* Acciones rápidas (solo lo que el rol puede abrir) */}
       <Box>
-        <SectionLabel>Acciones rápidas</SectionLabel>
+        <SectionLabel icon={BoltRounded}>Acciones rápidas</SectionLabel>
         <Grid container spacing={2}>
           {quickActions.map((action) => {
             const Icon = ACTION_ICONS[action.icon]
@@ -132,7 +145,7 @@ const HomePage = () => {
                     '&:hover': { transform: 'translateY(-2px)', borderColor: 'rgba(226,184,74,0.3)' },
                   }}
                 >
-                  {Icon && <Icon sx={{ fontSize: 20, color: 'primary.main', mb: 1 }} />}
+                  {Icon && <KpiIcon icon={Icon} sx={{ mb: 1 }} />}
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>{action.label}</Typography>
                   <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>
                     {action.description}
@@ -147,7 +160,7 @@ const HomePage = () => {
       {/* Paciente: episodios recientes */}
       {esPaciente && (
         <Box>
-          <SectionLabel>Episodios recientes</SectionLabel>
+          <SectionLabel icon={HistoryRounded}>Episodios recientes</SectionLabel>
           <Paper sx={{ p: 2 }}>
             <Stack spacing={1.5}>
               {episodes.map((ep) => (
@@ -196,7 +209,7 @@ const HomePage = () => {
       {/* Profesional/admin: agenda de citas */}
       {!esPaciente && (
         <Box>
-          <SectionLabel>Agenda de citas</SectionLabel>
+          <SectionLabel icon={EventNoteRounded}>Agenda de citas</SectionLabel>
           <Paper sx={{ p: 2 }}>
             <Stack spacing={1.5}>
               {citas.map((c) => (
@@ -236,7 +249,8 @@ const HomePage = () => {
 
       {/* Tip según rol */}
       <Box sx={[glassMustardSx, { borderRadius: '12px', p: 2.5 }]}>
-        <Typography sx={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'primary.main', mb: 1 }}>
+        <Typography sx={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'primary.main', mb: 1, display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <TipsAndUpdatesRounded sx={{ fontSize: 15 }} />
           {esPaciente ? 'Tip del día' : 'Nota'}
         </Typography>
         <Typography key={tip} variant="body2" sx={{ lineHeight: 1.7, animation: 'riseIn 0.5s ease-out' }}>
